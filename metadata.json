@@ -1,0 +1,7 @@
+{
+  "name": "Harmonic Scout",
+  "description": "A professional-grade real-time musical key detector that uses AI to analyze your performance via microphone and suggest matching scales, modes, and riffs.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
