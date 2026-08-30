@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-08-30T21:36:14.536Z",
+  "repo": "GuitarRecognitionJam",
+  "coordination": {
+    "singleSourceOfTruth": ".agent/plans.json",
+    "dashboard": "docs/agent-coordination.md",
+    "protocol": "AGENTS.md",
+    "cli": "scripts/agent-coordination.mjs"
+  },
+  "agents": [
+    {
+      "id": "harmonic-scout-core",
+      "name": "Harmonic Scout Core",
+      "role": "Repository maintainer / coordinator",
+      "contact": "branch arena/01a053e9-guitarrecognitionjam",
+      "owns": [
+        "App.tsx",
+        "components/",
+        "services/",
+        "constants.ts",
+        "types.ts"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "audio-engineer",
+      "name": "Audio Engineer Agent",
+      "role": "Pitch detection, autocorrelation, Tone.js playback, audio routing",
+      "contact": "declare via .agent/plans.json",
+      "owns": [
+        "App.tsx",
+        "constants.ts",
+        "services/"
+      ],
+      "status": "available"
+    },
+    {
+      "id": "ui-craftsman",
+      "name": "UI Craftsman Agent",
+      "role": "React components, layout, styling, accessibility",
+      "contact": "declare via .agent/plans.json",
+      "owns": [
+        "components/",
+        "App.tsx",
+        "index.html"
+      ],
+      "status": "available"
+    },
+    {
+      "id": "ai-context-engineer",
+      "name": "AI Context Engineer Agent",
+      "role": "Gemini service, prompts, response schemas, analysis types",
+      "contact": "declare via .agent/plans.json",
+      "owns": [
+        "services/geminiService.ts",
+        "types.ts"
+      ],
+      "status": "available"
+    }
+  ],
+  "plans": [
+    {
+      "id": "PLAN-001",
+      "agent": "harmonic-scout-core",
+      "title": "Initialize Harmonic Scout project",
+      "goal": "Bootstrap the Vite + React app with real-time pitch detection, chord recognition, and Gemini-based modal/scale/riff suggestions.",
+      "area": "foundation",
+      "files": [
+        "App.tsx",
+        "components/",
+        "services/",
+        "constants.ts",
+        "types.ts",
+        "index.html",
+        "index.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T00:00:00.000Z",
+      "updatedAt": "2026-08-30T00:00:00.000Z",
+      "dependsOn": [],
+      "notes": [
+        "Initial commit 8fcda31 - project boots and core pitch/chord flow works."
+      ]
+    },
+    {
+      "id": "PLAN-002",
+      "agent": "harmonic-scout-core",
+      "title": "Concept: Interactive Improvisation Studio",
+      "goal": "Architektur-Konzept fuer den Lick-Trainer (PDF-Import, Playback, Mic-Matching, Tempo-Gating) und spielerische Module.",
+      "area": "docs",
+      "files": [
+        "docs/improvisation-studio-concept.md"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T18:54:37.506Z",
+      "updatedAt": "2026-08-30T18:54:37.548Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T18:54:37.548Z.",
+        "Konzept v0.1 erstellt."
+      ]
+    },
+    {
+      "id": "PLAN-003",
+      "agent": "harmonic-scout-core",
+      "title": "MVP: Module Hub + Lick Trainer",
+      "goal": "Module-Hub, Lick-Trainer mit manuellem Lick, Playback, Mic-Matching, Tempo-Gating",
+      "area": "modules,core",
+      "files": [
+        "modules/",
+        "core/",
+        "App.tsx",
+        "vite.config.ts"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T19:23:56.556Z",
+      "updatedAt": "2026-08-30T19:24:23.004Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T19:24:23.004Z.",
+        "MVP M1-M3 umgesetzt: Module-Hub, Lick-Trainer mit Playback/Mic-Matching/Tempo-Gating. Build + tsc gruen."
+      ]
+    },
+    {
+      "id": "PLAN-004",
+      "agent": "ui-craftsman",
+      "title": "Cyberpunk/Akira Retro-Sync Theme",
+      "goal": "Neon-Glow, Scanlines, Grid, Glitch-Typo, animierte HUD-Karten und lebendige Module.",
+      "area": "styles,ui",
+      "files": [
+        "index.html",
+        "App.tsx",
+        "modules/ModuleHub.tsx",
+        "modules/LickTrainer.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T19:30:18.565Z",
+      "updatedAt": "2026-08-30T19:30:21.424Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T19:30:21.423Z.",
+        "Theme umgesetzt: Neon, Scanlines, Grid, Glitch, Cyber-Cards. Build + tsc gruen."
+      ]
+    },
+    {
+      "id": "PLAN-005",
+      "agent": "audio-engineer",
+      "title": "PDF-Import + Akira Cyber Theme",
+      "goal": "PDF-Text-Upload erklaert Licks aus digitalen PDFs; Akira/Neo-Tokyo Akzente.",
+      "area": "import,pdf,ui",
+      "files": [
+        "core/pdf.ts",
+        "modules/LickTrainer.tsx",
+        "index.html",
+        "package.json",
+        "docs/improvisation-studio-concept.md"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T21:36:12.022Z",
+      "updatedAt": "2026-08-30T21:36:14.536Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T21:36:14.536Z.",
+        "PDF-Import (M4) und Akira/Neo-Tokyo Akzente umgesetzt. tsc + build gruen."
+      ]
+    }
+  ]
+}

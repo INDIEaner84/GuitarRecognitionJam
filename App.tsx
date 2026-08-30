@@ -4,6 +4,7 @@ import { Visualizer } from './components/Visualizer';
 import { SuggestionCard, Tablature, PlayRiffButton, PlayProgressionButton } from './components/SuggestionCard';
 import { ScaleVisualizer, ModeVisualizer, FretboardMini } from './components/ScaleVisualizer';
 import { SpeedTrainer } from './components/SpeedTrainer';
+import { ImprovisationStudio } from './modules/ImprovisationStudio';
 import { getNoteFromFrequency, identifyChord } from './constants';
 import { analyzeMusicalContext } from './services/geminiService';
 import { NoteData, ScaleAnalysis } from './types';
@@ -72,7 +73,7 @@ const autoCorrelate = (buf: Float32Array, sampleRate: number): number => {
 };
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'analysis' | 'trainer'>('analysis');
+  const [activeTab, setActiveTab] = useState<'analysis' | 'trainer' | 'studio'>('analysis');
   const [isListening, setIsListening] = useState(false);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [currentNote, setCurrentNote] = useState<NoteData | null>(null);
@@ -238,57 +239,72 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050810] text-slate-100 p-4 md:p-8 selection:bg-blue-500/30">
-      <header className="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800 pb-6">
+    <div className="cyber-app min-h-screen bg-[#04060f] text-slate-100 p-4 md:p-8 selection:bg-cyan-500/30">
+      <div className="cyber-bg" />
+      <div className="cyber-grid-bg" />
+      <div className="cyber-scanline" />
+      <div className="cyber-overlay" />
+      <header className="max-w-6xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-cyan-500/20 pb-6">
         <div className="group cursor-default text-center md:text-left">
-          <h1 className="text-3xl font-black bg-gradient-to-r from-blue-400 via-indigo-400 to-emerald-400 bg-clip-text text-transparent tracking-tighter">
+          <h1 data-text="HARMONIC SCOUT" className="glitch cyber-display text-3xl font-black text-white tracking-tighter drop-shadow-[0_0_18px_rgba(0,240,255,0.55)]">
             HARMONIC SCOUT
           </h1>
-          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-1 group-hover:text-blue-400 transition-colors">AI Musical Intelligence</p>
+          <p className="hud-label text-[10px] font-bold uppercase mt-1 group-hover:text-cyan-300 transition-colors">Cyber Dissonance · AI Musical Intelligence</p>
         </div>
         
-        <div className="flex bg-slate-900/50 p-1 rounded-xl border border-slate-800">
+        <div className="flex bg-slate-950/60 p-1 rounded-xl border border-cyan-500/20 shadow-[0_0_24px_rgba(0,240,255,0.08)]">
            <button 
              onClick={() => setActiveTab('analysis')}
-             className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'analysis' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+             className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'analysis' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_18px_rgba(0,240,255,0.4)]' : 'text-slate-500 hover:text-slate-300'}`}
            >
              Analysis
            </button>
            <button 
              onClick={() => setActiveTab('trainer')}
-             className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'trainer' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+             className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'trainer' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shadow-[0_0_18px_rgba(0,240,255,0.4)]' : 'text-slate-500 hover:text-slate-300'}`}
            >
              Speed Trainer
+           </button>
+           <button 
+             onClick={() => setActiveTab('studio')}
+             className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${activeTab === 'studio' ? 'bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/40 shadow-[0_0_18px_rgba(255,42,109,0.45)]' : 'text-slate-500 hover:text-slate-300'}`}
+           >
+             Studio
            </button>
         </div>
 
         <div className="flex gap-3">
           <button 
             onClick={() => { setDetectedNotes(new Set()); setAnalysis(null); }} 
-            className="px-4 py-2 text-xs font-bold border border-slate-800 rounded-md hover:bg-slate-900 transition-all uppercase tracking-widest text-slate-400"
+            className="cyber-btn px-4 py-2 text-xs font-bold rounded-md transition-all uppercase tracking-widest text-slate-400 hover:text-white"
           >
             Reset
           </button>
           {!isListening ? (
             <button 
               onClick={startListening} 
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-md shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all flex items-center gap-2 uppercase tracking-widest"
+              className="cyber-btn px-6 py-2 text-white text-xs font-black rounded-md transition-all flex items-center gap-2 uppercase tracking-widest"
             >
-              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+              <span className="pulse-dot bg-cyan-400 text-cyan-400" />
               Listen
             </button>
           ) : (
             <button 
               onClick={stopListening} 
-              className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-black rounded-md shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all uppercase tracking-widest flex items-center gap-2"
+              className="cyber-btn cyber-btn-magenta px-6 py-2 text-white text-xs font-black rounded-md transition-all uppercase tracking-widest flex items-center gap-2"
             >
-              <span className="w-2 h-2 rounded-full bg-white" />
+              <span className="pulse-dot bg-fuchsia-400 text-fuchsia-400" />
               Stop
             </button>
           )}
         </div>
       </header>
 
+      {activeTab === 'studio' ? (
+        <main className="max-w-6xl mx-auto">
+          <ImprovisationStudio />
+        </main>
+      ) : (
       <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-md">
@@ -523,6 +539,7 @@ const App: React.FC = () => {
           )}
         </div>
       </main>
+      )}
     </div>
   );
 };
