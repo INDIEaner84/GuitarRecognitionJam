@@ -7,10 +7,20 @@ import { LickProgress } from './licks';
 
 const STORAGE_KEY = 'harmonic-scout.progress.v1';
 
+export interface SectionProgress {
+  bestBpm: number;
+  bestStreak: number;
+  stars: number;
+  totalXp: number;
+  runs: number;
+}
+
 export interface ModuleProgress {
   lickTrainer: {
     licks: Record<string, LickProgress>;
   };
+  coach: SectionProgress;
+  rhythmJam: SectionProgress;
 }
 
 export interface PlayerProgress {
@@ -23,6 +33,14 @@ export interface PlayerProgress {
 
 const LEVEL_XP = 250;
 
+const emptySection = (): SectionProgress => ({
+  bestBpm: 0,
+  bestStreak: 0,
+  stars: 0,
+  totalXp: 0,
+  runs: 0,
+});
+
 const emptyProgress = (): PlayerProgress => ({
   xp: 0,
   level: 1,
@@ -31,6 +49,8 @@ const emptyProgress = (): PlayerProgress => ({
     lickTrainer: {
       licks: {},
     },
+    coach: emptySection(),
+    rhythmJam: emptySection(),
   },
 });
 
@@ -48,6 +68,8 @@ export const loadProgress = (): PlayerProgress => {
         lickTrainer: {
           licks: parsed.modules?.lickTrainer?.licks ?? {},
         },
+        coach: { ...emptySection(), ...(parsed.modules?.coach ?? {}) },
+        rhythmJam: { ...emptySection(), ...(parsed.modules?.rhythmJam ?? {}) },
       },
     };
   } catch {
@@ -60,6 +82,8 @@ export const saveProgress = (progress: PlayerProgress) => {
   progress.lastPlayedAt = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
 };
+
+export type SectionKey = 'coach' | 'rhythmJam';
 
 export const addXp = (
   progress: PlayerProgress,
@@ -88,6 +112,27 @@ export const addXp = (
   return { player: progress, leveledUp: progress.level > before };
 };
 
+export const addSectionXp = (
+  progress: PlayerProgress,
+  section: SectionKey,
+  amount: number,
+  extra?: Partial<SectionProgress>,
+): { player: PlayerProgress; leveledUp: boolean } => {
+  const before = progress.level;
+  progress.xp += amount;
+  progress.level = levelForXp(progress.xp);
+
+  const entry = { ...emptySection(), ...progress.modules[section] };
+  entry.totalXp += amount;
+  entry.runs += extra?.runs ?? 0;
+  if (extra?.bestBpm && extra.bestBpm > entry.bestBpm) entry.bestBpm = extra.bestBpm;
+  if (extra?.bestStreak && extra.bestStreak > entry.bestStreak) entry.bestStreak = extra.bestStreak;
+  if (extra?.stars && extra.stars > entry.stars) entry.stars = extra.stars;
+
+  progress.modules[section] = entry;
+  return { player: progress, leveledUp: progress.level > before };
+};
+
 export const resetProgress = () => {
   const fresh = emptyProgress();
   saveProgress(fresh);
@@ -99,5 +144,12 @@ export const lickStarsForBpm = (bpm: number, maxBpm: number): number => {
   const ratio = bpm / Math.max(maxBpm, 1);
   if (ratio >= 0.85) return 2;
   if (ratio >= 0.6) return 1;
+  return 0;
+};
+
+export const sectionStarsForStreak = (streak: number, target: number): number => {
+  if (streak >= target) return 3;
+  if (streak >= Math.ceil(target / 2)) return 2;
+  if (streak >= Math.ceil(target / 4)) return 1;
   return 0;
 };

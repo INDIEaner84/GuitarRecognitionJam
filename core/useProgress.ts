@@ -6,6 +6,8 @@ import {
   loadProgress,
   saveProgress,
   addXp,
+  addSectionXp,
+  SectionKey,
   PlayerProgress,
 } from './progress';
 import { LickProgress } from './licks';
@@ -25,17 +27,24 @@ export const useProgress = () => {
   );
 
   const grant = useCallback(
-    (amount: number, lickId: string, extra?: Partial<LickProgress>) => {
-      const { player: next, leveledUp } = addXp(loadProgress(), amount, lickId, extra);
-      setPlayer(next);
-      saveProgress(next);
-      return leveledUp;
+    (amount: number, targetKey: string, extra?: Partial<LickProgress> & Record<string, number>) => {
+      const p = loadProgress();
+      const section: SectionKey | null =
+        targetKey === 'coach' ? 'coach' : targetKey === 'rhythm-jam' ? 'rhythmJam' : null;
+
+      const result = section
+        ? addSectionXp(p, section, amount, extra as any)
+        : addXp(p, amount, targetKey, extra as Partial<LickProgress>);
+
+      setPlayer(result.player);
+      saveProgress(result.player);
+      return result.leveledUp;
     },
     [],
   );
 
   const reset = useCallback(() => {
-    saveProgress({ xp: 0, level: 1, streak: 0, modules: { lickTrainer: { licks: {} } } });
+    saveProgress({ xp: 0, level: 1, streak: 0, modules: { lickTrainer: { licks: {} }, coach: { bestBpm: 0, bestStreak: 0, stars: 0, totalXp: 0, runs: 0 }, rhythmJam: { bestBpm: 0, bestStreak: 0, stars: 0, totalXp: 0, runs: 0 } } });
     setPlayer(loadProgress());
   }, []);
 

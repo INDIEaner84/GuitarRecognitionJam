@@ -365,7 +365,7 @@ src/ (bzw. wird in bestehende Struktur eingepflegt)
 | **M4** | PDF-Import (Text) + Parser + Korrektur-UI | ✅ MVP umgesetzt (Fokus: ASCII-Tab & Notennamen, Monoline) |
 | **M5** | Gamification: XP, Level, Streaks, Sterne, Freischaltungen | ✅ Grundlage (XP/Level/Streak/Sterne), Ausbau folgt |
 | **M6** | Improvisations-Coach (Tonart/Skala/Fretboard) | ✅ MVP umgesetzt |
-| **M7** | Theorie-Quiz & Gehörbildung & Rhythm Jam | ⏳ Roadmap |
+| **M7** | Theorie-Quiz & Gehörbildung & Rhythm Jam | ✅ Rhythm Jam umgesetzt; Theorie-Quiz & Gehörbildung später |
 
 **Status (31.08.2026):** Module-Hub in `modules/ModuleHub.tsx`, Lick-Trainer in
 `modules/LickTrainer.tsx`, geteilte Logik in `core/` (audio, licks, playback,

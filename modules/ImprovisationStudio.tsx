@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { ModuleHub } from './ModuleHub';
 import { LickTrainer } from './LickTrainer';
 import { ImprovisationCoach } from './ImprovisationCoach';
+import { RhythmJam } from './RhythmJam';
 import { useProgress } from '../core/useProgress';
 import { LickProgress } from '../core/licks';
 
 export const ImprovisationStudio: React.FC = () => {
   const { player, reset } = useProgress();
-  const [view, setView] = useState<'hub' | 'lick-trainer' | 'coach'>('hub');
+  const [view, setView] = useState<'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam'>('hub');
 
   const lickProgress = player.modules.lickTrainer.licks;
   const lickValues: LickProgress[] = Object.values(lickProgress);
@@ -38,10 +39,10 @@ export const ImprovisationStudio: React.FC = () => {
     {
       id: 'improvise',
       title: 'Improvisations-Coach',
-      description: 'Tonart & Skala live erkennen, Fretboard-Führung und eine spielerische Ziel-Noten-Challenge.',
+      description: 'Tonart & Skala live erkennen, Fretboard-Führung und eine Tempo-Ramp-Challenge.',
       icon: '🎸',
       available: true,
-      progress: 0,
+      progress: player.modules.coach.bestStreak ? Math.min(player.modules.coach.stars / 3, 1) : 0,
       onClick: () => setView('coach'),
     },
     {
@@ -65,11 +66,13 @@ export const ImprovisationStudio: React.FC = () => {
     {
       id: 'rhythm',
       title: 'Rhythm Jam',
-      description: 'Timing und Groove gegen Metronom-Targets trainieren.',
+      description: 'Spiele auf den Beat, halte das Muster, steigere das Tempo bis Max BPM.',
       icon: '🥁',
-      available: false,
-      progress: 0,
-      onClick: () => undefined,
+      available: true,
+      progress: player.modules.rhythmJam.bestBpm
+        ? Math.min(player.modules.rhythmJam.bestBpm / 160, 1)
+        : 0,
+      onClick: () => setView('rhythm-jam'),
     },
     {
       id: 'library',
@@ -88,6 +91,10 @@ export const ImprovisationStudio: React.FC = () => {
 
   if (view === 'coach') {
     return <ImprovisationCoach onBack={() => setView('hub')} />;
+  }
+
+  if (view === 'rhythm-jam') {
+    return <RhythmJam onBack={() => setView('hub')} />;
   }
 
   return <ModuleHub modules={modules} player={player} onReset={reset} />;

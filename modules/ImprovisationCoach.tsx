@@ -7,20 +7,33 @@ import {
   SCALE_DEFS,
   pitchClassName,
   buildTargetSequence,
+  buildScaleRun,
   detectBestScale,
   suggestScalesForNotes,
   scaleNames,
 } from '../core/theory';
+import { sectionStarsForStreak } from '../core/progress';
 
 interface CoachProps {
   onBack: () => void;
 }
 
-type CoachMode = 'free' | 'challenge';
+type CoachMode = 'free' | 'challenge' | 'done';
+type ChallengeStyle = 'random' | 'scale-up' | 'scale-down';
 
+interface CoachTempo {
+  startBpm: number;
+  minBpm: number;
+  maxBpm: number;
+  stepBpm: number;
+}
+
+const DEFAULT_TEMPO: CoachTempo = { startBpm: 70, minBpm: 60, maxBpm: 150, stepBpm: 5 };
 const octaveForClass = (pc: number): number => (pc < 7 ? 3 : 2);
-
 const noteForPlayback = (pc: number): string => `${pitchClassName(pc)}${octaveForClass(pc)}`;
+
+const clampBpm = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
   const mic = usePitchStream();
@@ -30,43 +43,54 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
   const [detectedNotes, setDetectedNotes] = useState<string[]>([]);
   const [rootIdx, setRootIdx] = useState(9); // A
   const [scaleId, setScaleId] = useState('minor-pentatonic');
+  const [challengeStyle, setChallengeStyle] = useState<ChallengeStyle>('random');
+  const [seqLength, setSeqLength] = useState(6);
+  const [tempo, setTempo] = useState<CoachTempo>(DEFAULT_TEMPO);
+
   const [targetSequence, setTargetSequence] = useState<number[]>([]);
   const [targetIndex, setTargetIndex] = useState(0);
-  const [hits, setHits] = useState(0);
-  const [misses, setMisses] = useState(0);
-  const [streak, setStreak] = useState(0);
+  const [challengeBpm, setChallengeBpm] = useState(DEFAULT_TEMPO.startBpm);
+  const [concluded, setConcluded] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
   const playerRef = useRef<LickPlayer | null>(null);
-  const lastProcessedRef = useRef<{ classIdx: number; at: number } | null>(null);
+  const lastProcessedRef = useRef<{ classIdx: string; at: number } | null>(null);
+  const statsRef = useRef({ hits: 0, misses: 0, streak: 0 });
 
   const selectedScale = SCALE_DEFS.find((s) => s.id === scaleId) ?? SCALE_DEFS[3];
-
   const best = useMemo(() => detectBestScale(detectedNotes), [detectedNotes]);
   const suggestions = useMemo(() => suggestScalesForNotes(detectedNotes), [detectedNotes]);
-
   const activeNote = mic.sample?.noteName ?? null;
 
   useEffect(() => {
     if (detectedNotes.length === 0 && mic.sample) {
-      setDetectedNotes((prev) => (prev.includes(mic.sample!.noteName) ? prev : [...prev, mic.sample!.noteName]));
+      const note = mic.sample.noteName;
+      setDetectedNotes((prev) => (prev.includes(note) ? prev : [...prev, note]));
     }
   }, [mic.sample]);
 
-  const startChallenge = async () => {
-    const seq = buildTargetSequence(rootIdx, selectedScale.intervals, 6);
+  const buildSequence = (): number[] => {
+    if (challengeStyle === 'scale-up' || challengeStyle === 'scale-down') {
+      return buildScaleRun(rootIdx, selectedScale.intervals, challengeStyle === 'scale-up', seqLength);
+    }
+    return buildTargetSequence(rootIdx, selectedScale.intervals, seqLength);
+  };
+
+  const startChallenge = async (bpmOverride?: number) => {
+    const seq = buildSequence();
+    const nextBpm = clampBpm(bpmOverride ?? tempo.startBpm, tempo.minBpm, tempo.maxBpm);
+    statsRef.current = { hits: 0, misses: 0, streak: 0 };
     setTargetSequence(seq);
     setTargetIndex(0);
-    setHits(0);
-    setMisses(0);
-    setStreak(0);
-    setFeedback('Höre zu und spiele die Ziel-Noten nach…');
-    setIsRunning(true);
+    setFeedback(bpmOverride ? `Neuer Lauf bei ${nextBpm} BPM…` : 'Höre zu und spiele die Ziel-Noten nach…');
+    setConcluded(false);
     setMode('challenge');
+    setChallengeBpm(nextBpm);
+    setIsRunning(true);
 
     const lick = {
-      id: 'coach-demo',
+      id: 'coach-sequence',
       title: 'Coach Sequence',
       events: seq.map((pc, i) => ({
         id: `seq-${i}`,
@@ -77,7 +101,7 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
     };
 
     if (!playerRef.current) playerRef.current = new LickPlayer();
-    await playerRef.current.play(lick, 80, {});
+    await playerRef.current.play(lick, nextBpm, {});
   };
 
   const stopChallenge = async () => {
@@ -87,15 +111,32 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
   };
 
   const completeChallenge = () => {
+    const stats = statsRef.current;
+    const clean = stats.misses === 0;
+    const nextBpm = clean
+      ? clampBpm(challengeBpm + tempo.stepBpm, tempo.minBpm, tempo.maxBpm)
+      : challengeBpm;
+
     setIsRunning(false);
-    setFeedback(`SEQ CLEAR — ${hits} Treffer · ${misses} Fehlversuche`);
-    grant(50, 'coach', { bestBpm: 0, stars: Math.min(3, 1 + Math.floor(hits / 4)), cleanRuns: 1 });
+    setConcluded(true);
+    setMode('done');
+    setChallengeBpm(nextBpm);
+    setFeedback(
+      clean
+        ? `SEQ CLEAR — sauber bei ${challengeBpm} BPM → weiter mit ${nextBpm} BPM`
+        : `SEQ CLEAR — ${stats.hits} Treffer · ${stats.misses} Fehler · nächster Versuch bei ${nextBpm} BPM`,
+    );
+
+    grant(clean ? 30 : 12, 'coach', {
+      bestBpm: nextBpm,
+      bestStreak: stats.streak,
+      stars: sectionStarsForStreak(stats.streak, Math.max(2, Math.ceil(seqLength / 2))),
+      runs: 1,
+    });
   };
 
   useEffect(() => {
-    if (!isRunning || mode !== 'challenge') {
-      return;
-    }
+    if (!isRunning || mode !== 'challenge') return;
     if (targetIndex >= targetSequence.length) {
       completeChallenge();
       return;
@@ -106,7 +147,6 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
     const normalizedPlayed = playedNote.replace(/\d+$/, '');
     const targetName = pitchClassName(targetSequence[targetIndex]);
 
-    // Debounce repeated samples of the note we just processed.
     const now = performance.now();
     if (
       lastProcessedRef.current &&
@@ -118,8 +158,8 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
     lastProcessedRef.current = { classIdx: normalizedPlayed, at: now };
 
     if (normalizedPlayed === targetName) {
-      setHits((h) => h + 1);
-      setStreak((s) => s + 1);
+      statsRef.current.hits += 1;
+      statsRef.current.streak += 1;
       setFeedback(`✔ ${targetName} — weiter!`);
       grant(2, 'coach');
       if (targetIndex + 1 >= targetSequence.length) {
@@ -128,8 +168,8 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
       }
       setTargetIndex((i) => i + 1);
     } else {
-      setMisses((m) => m + 1);
-      setStreak(0);
+      statsRef.current.misses += 1;
+      statsRef.current.streak = 0;
       setFeedback(`✘ ${normalizedPlayed} — gesucht: ${targetName}`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -137,6 +177,7 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
 
   const scaleNamesForSelected = scaleNames(rootIdx, selectedScale.intervals);
   const target = targetSequence[targetIndex] ?? null;
+  const coachProgress = player.modules.coach;
 
   return (
     <div className="space-y-6 relative">
@@ -155,6 +196,13 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
           IMPROVISATIONS-COACH
         </h2>
         <span className="akira-kanji ml-auto text-sm hidden md:block">即興</span>
+      </div>
+
+      <div className="flex flex-wrap gap-3 cyber-mono text-[9px] uppercase tracking-widest">
+        <span className="text-slate-500">Best BPM <span className="neon-cyan">{coachProgress.bestBpm}</span></span>
+        <span className="text-slate-500">Best Streak <span className="neon-green">{coachProgress.bestStreak}</span></span>
+        <span className="text-slate-500">★ <span className="neon-magenta">{coachProgress.stars}</span></span>
+        <span className="text-slate-500">🏆 <span className="neon-amber">{coachProgress.totalXp} XP</span></span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -186,33 +234,71 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
 
         <div className="cyber-card p-5">
           <h3 className="hud-label text-[10px] font-black mb-4">🎯 Challenge</h3>
-          <label className="block mb-3">
-            <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-500">Root</span>
-            <select
-              value={rootIdx}
-              onChange={(e) => setRootIdx(Number(e.target.value))}
-              className="mt-1 w-full bg-black/50 border border-purple-500/20 rounded-lg p-2 text-xs text-white cyber-mono focus:outline-none focus:border-purple-400/60"
-            >
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i} value={i}>{pitchClassName(i)}</option>
-              ))}
-            </select>
-          </label>
-          <label className="block mb-4">
-            <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-500">Scale</span>
-            <select
-              value={scaleId}
-              onChange={(e) => setScaleId(e.target.value)}
-              className="mt-1 w-full bg-black/50 border border-purple-500/20 rounded-lg p-2 text-xs text-white cyber-mono focus:outline-none focus:border-purple-400/60"
-            >
-              {SCALE_DEFS.map((s) => (
-                <option key={s.id} value={s.id}>{s.name}</option>
-              ))}
-            </select>
-          </label>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-500">Root</span>
+              <select
+                value={rootIdx}
+                onChange={(e) => setRootIdx(Number(e.target.value))}
+                className="mt-1 w-full bg-black/50 border border-purple-500/20 rounded-lg p-2 text-xs text-white cyber-mono focus:outline-none focus:border-purple-400/60"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i} value={i}>{pitchClassName(i)}</option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-500">Scale</span>
+              <select
+                value={scaleId}
+                onChange={(e) => setScaleId(e.target.value)}
+                className="mt-1 w-full bg-black/50 border border-purple-500/20 rounded-lg p-2 text-xs text-white cyber-mono focus:outline-none focus:border-purple-400/60"
+              >
+                {SCALE_DEFS.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-500">Modus</span>
+              <select
+                value={challengeStyle}
+                onChange={(e) => setChallengeStyle(e.target.value as ChallengeStyle)}
+                className="mt-1 w-full bg-black/50 border border-purple-500/20 rounded-lg p-2 text-xs text-white cyber-mono focus:outline-none focus:border-purple-400/60"
+              >
+                <option value="random">Random Walk</option>
+                <option value="scale-up">Skala aufwärts</option>
+                <option value="scale-down">Skala abwärts</option>
+              </select>
+            </label>
+            <label className="block">
+              <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-500">Noten</span>
+              <select
+                value={seqLength}
+                onChange={(e) => setSeqLength(Number(e.target.value))}
+                className="mt-1 w-full bg-black/50 border border-purple-500/20 rounded-lg p-2 text-xs text-white cyber-mono focus:outline-none focus:border-purple-400/60"
+              >
+                {[4, 6, 8, 12].map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="mt-3 rounded-lg border border-purple-500/20 bg-purple-500/5 p-3">
+            <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-400">Tempo-Ramp</span>
+            <div className="grid grid-cols-4 gap-2 mt-2">
+              <NumberField label="Start" value={tempo.startBpm} onChange={(v) => setTempo({ ...tempo, startBpm: v })} />
+              <NumberField label="Min" value={tempo.minBpm} onChange={(v) => setTempo({ ...tempo, minBpm: v })} />
+              <NumberField label="Max" value={tempo.maxBpm} onChange={(v) => setTempo({ ...tempo, maxBpm: v })} />
+              <NumberField label="Step" value={tempo.stepBpm} onChange={(v) => setTempo({ ...tempo, stepBpm: v })} />
+            </div>
+            <p className="cyber-mono text-[9px] text-slate-500 mt-2">Sauberer Lauf → +{tempo.stepBpm} BPM bis {tempo.maxBpm}.</p>
+          </div>
+
+          <div className="flex gap-2 mt-4">
             <button
-              onClick={startChallenge}
+              onClick={() => startChallenge()}
               className="cyber-btn cyber-btn-magenta px-4 py-2.5 flex-1 text-xs font-black uppercase tracking-widest"
             >
               ▶ Start
@@ -295,7 +381,7 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
           <div className="flex justify-between items-center mb-4">
             <h3 className="hud-label text-[10px] font-black">🎯 Target {targetIndex + 1}/{targetSequence.length}</h3>
             <div className="cyber-mono text-[10px] text-slate-400">
-              Hits {hits} · Miss {misses} · Streak {streak}
+              {challengeBpm} BPM · Hits {targetIndex} · Streak {statsRef.current.streak}
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -313,9 +399,54 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
               </div>
             </div>
           </div>
-          {feedback && <p className="cyber-mono text-[10px] text-amber-200 mt-3">{feedback}</p>}
+          <div className="cyber-mono text-[10px] text-amber-200 mt-3">{feedback}</div>
+        </div>
+      )}
+
+      {mode === 'done' && (
+        <div className="cyber-card relative overflow-hidden p-8 text-center">
+          <div className="absolute -left-20 -top-20 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]" />
+          <div className="text-4xl relative mb-4">🎯</div>
+          <h3 data-text="SEQUENCE CLEAR" className="glitch cyber-display text-2xl font-black text-white uppercase tracking-wider drop-shadow-[0_0_20px_rgba(157,0,255,0.5)]">
+            SEQUENCE CLEAR
+          </h3>
+          <p className="cyber-mono text-slate-300 mt-3 text-sm relative">
+            {statsRef.current.hits} Treffer · {statsRef.current.misses} Fehler ·{' '}
+            <span className="neon-purple font-black">{challengeBpm} BPM</span>
+          </p>
+          {feedback && <p className="cyber-mono text-[10px] text-amber-200 mt-2 relative">{feedback}</p>}
+          <div className="flex flex-wrap gap-3 mt-6 justify-center relative">
+            <button
+              onClick={() => startChallenge(challengeBpm)}
+              className="cyber-btn cyber-btn-magenta px-6 py-3 text-white text-xs font-black rounded-lg uppercase tracking-widest"
+            >
+              ↔ Repeat @ {challengeBpm} BPM
+            </button>
+            <button
+              onClick={() => setMode('free')}
+              className="cyber-btn px-6 py-3 text-white text-xs font-black rounded-lg uppercase tracking-widest"
+            >
+              Free Play
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
 };
+
+const NumberField: React.FC<{ label: string; value: number; onChange: (v: number) => void }> = ({
+  label,
+  value,
+  onChange,
+}) => (
+  <label className="flex-1">
+    <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-1">{label}</span>
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="w-full bg-black/50 border border-cyan-500/20 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400/60"
+    />
+  </label>
+);
