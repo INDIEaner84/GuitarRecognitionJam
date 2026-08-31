@@ -9,13 +9,13 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-08-30T21:36:14.536Z
+Aktualisiert: 2026-08-31T14:00:08.590Z
 
 ## Agents
 
 | ID | Rolle | Status | Pläne aktiv/gesamt |
 | --- | --- | --- | --- |
-| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/3 |
+| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/4 |
 | `audio-engineer` | Pitch detection, autocorrelation, Tone.js playback, audio routing | available | 0/1 |
 | `ui-craftsman` | React components, layout, styling, accessibility | available | 0/1 |
 | `ai-context-engineer` | Gemini service, prompts, response schemas, analysis types | available | 0/0 |
@@ -89,6 +89,19 @@ _Keine aktiven Vorhaben._
 **Notizen:**
 - Status changed to done at 2026-08-30T21:36:14.536Z.
 - PDF-Import (M4) und Akira/Neo-Tokyo Akzente umgesetzt. tsc + build gruen.
+
+### PLAN-006 — Enable Improvisation Coach module
+
+- **Agent:** `harmonic-scout-core`
+- **Status:** 🟢 done
+- **Bereich:** modules,theory
+- **Betroffene Dateien:** modules/ImprovisationStudio.tsx, modules/ImprovisationCoach.tsx, core/theory.ts, index.html
+
+**Ziel:** Coach-Modul aktivieren: Live-Key-Detection, Skala/Fretboard-Fuehrung, Challenge-Game.
+
+**Notizen:**
+- Status changed to done at 2026-08-31T14:00:08.590Z.
+- Coach-Modul aktiv. tsc + build gruen.
 
 
 ## Workflow

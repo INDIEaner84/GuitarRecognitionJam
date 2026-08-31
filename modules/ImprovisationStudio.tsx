@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { ModuleHub } from './ModuleHub';
 import { LickTrainer } from './LickTrainer';
+import { ImprovisationCoach } from './ImprovisationCoach';
 import { useProgress } from '../core/useProgress';
 import { LickProgress } from '../core/licks';
 
 export const ImprovisationStudio: React.FC = () => {
   const { player, reset } = useProgress();
-  const [view, setView] = useState<'hub' | 'lick-trainer'>('hub');
+  const [view, setView] = useState<'hub' | 'lick-trainer' | 'coach'>('hub');
 
   const lickProgress = player.modules.lickTrainer.licks;
   const lickValues: LickProgress[] = Object.values(lickProgress);
@@ -37,11 +38,11 @@ export const ImprovisationStudio: React.FC = () => {
     {
       id: 'improvise',
       title: 'Improvisations-Coach',
-      description: 'Tonart & Skala live erkennen und auf dem Fretboard führen.',
+      description: 'Tonart & Skala live erkennen, Fretboard-Führung und eine spielerische Ziel-Noten-Challenge.',
       icon: '🎸',
-      available: false,
+      available: true,
       progress: 0,
-      onClick: () => undefined,
+      onClick: () => setView('coach'),
     },
     {
       id: 'theory',
@@ -83,6 +84,10 @@ export const ImprovisationStudio: React.FC = () => {
 
   if (view === 'lick-trainer') {
     return <LickTrainer onBack={() => setView('hub')} />;
+  }
+
+  if (view === 'coach') {
+    return <ImprovisationCoach onBack={() => setView('hub')} />;
   }
 
   return <ModuleHub modules={modules} player={player} onReset={reset} />;

@@ -364,7 +364,7 @@ src/ (bzw. wird in bestehende Struktur eingepflegt)
 | **M3** | Mic-Matching (Note + Timing) + Gating + Tempo min/max | ✅ MVP umgesetzt |
 | **M4** | PDF-Import (Text) + Parser + Korrektur-UI | ✅ MVP umgesetzt (Fokus: ASCII-Tab & Notennamen, Monoline) |
 | **M5** | Gamification: XP, Level, Streaks, Sterne, Freischaltungen | ✅ Grundlage (XP/Level/Streak/Sterne), Ausbau folgt |
-| **M6** | Improvisations-Coach (Tonart/Skala/Fretboard) | ⏳ Roadmap |
+| **M6** | Improvisations-Coach (Tonart/Skala/Fretboard) | ✅ MVP umgesetzt |
 | **M7** | Theorie-Quiz & Gehörbildung & Rhythm Jam | ⏳ Roadmap |
 
 **Status (31.08.2026):** Module-Hub in `modules/ModuleHub.tsx`, Lick-Trainer in
