@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-08-31T18:15:04.456Z",
+  "repo": "GuitarRecognitionJam",
+  "coordination": {
+    "singleSourceOfTruth": ".agent/plans.json",
+    "dashboard": "docs/agent-coordination.md",
+    "protocol": "AGENTS.md",
+    "cli": "scripts/agent-coordination.mjs"
+  },
+  "agents": [
+    {
+      "id": "harmonic-scout-core",
+      "name": "Harmonic Scout Core",
+      "role": "Repository maintainer / coordinator",
+      "contact": "branch arena/01a053e9-guitarrecognitionjam",
+      "owns": [
+        "App.tsx",
+        "components/",
+        "services/",
+        "constants.ts",
+        "types.ts"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "audio-engineer",
+      "name": "Audio Engineer Agent",
+      "role": "Pitch detection, autocorrelation, Tone.js playback, audio routing",
+      "contact": "declare via .agent/plans.json",
+      "owns": [
+        "App.tsx",
+        "constants.ts",
+        "services/"
+      ],
+      "status": "available"
+    },
+    {
+      "id": "ui-craftsman",
+      "name": "UI Craftsman Agent",
+      "role": "React components, layout, styling, accessibility",
+      "contact": "declare via .agent/plans.json",
+      "owns": [
+        "components/",
+        "App.tsx",
+        "index.html"
+      ],
+      "status": "available"
+    },
+    {
+      "id": "ai-context-engineer",
+      "name": "AI Context Engineer Agent",
+      "role": "Gemini service, prompts, response schemas, analysis types",
+      "contact": "declare via .agent/plans.json",
+      "owns": [
+        "services/geminiService.ts",
+        "types.ts"
+      ],
+      "status": "available"
+    }
+  ],
+  "plans": [
+    {
+      "id": "PLAN-001",
+      "agent": "harmonic-scout-core",
+      "title": "Initialize Harmonic Scout project",
+      "goal": "Bootstrap the Vite + React app with real-time pitch detection, chord recognition, and Gemini-based modal/scale/riff suggestions.",
+      "area": "foundation",
+      "files": [
+        "App.tsx",
+        "components/",
+        "services/",
+        "constants.ts",
+        "types.ts",
+        "index.html",
+        "index.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T00:00:00.000Z",
+      "updatedAt": "2026-08-30T00:00:00.000Z",
+      "dependsOn": [],
+      "notes": [
+        "Initial commit 8fcda31 - project boots and core pitch/chord flow works."
+      ]
+    },
+    {
+      "id": "PLAN-002",
+      "agent": "harmonic-scout-core",
+      "title": "Concept: Interactive Improvisation Studio",
+      "goal": "Architektur-Konzept fuer den Lick-Trainer (PDF-Import, Playback, Mic-Matching, Tempo-Gating) und spielerische Module.",
+      "area": "docs",
+      "files": [
+        "docs/improvisation-studio-concept.md"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T18:54:37.506Z",
+      "updatedAt": "2026-08-30T18:54:37.548Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T18:54:37.548Z.",
+        "Konzept v0.1 erstellt."
+      ]
+    },
+    {
+      "id": "PLAN-003",
+      "agent": "harmonic-scout-core",
+      "title": "MVP: Module Hub + Lick Trainer",
+      "goal": "Module-Hub, Lick-Trainer mit manuellem Lick, Playback, Mic-Matching, Tempo-Gating",
+      "area": "modules,core",
+      "files": [
+        "modules/",
+        "core/",
+        "App.tsx",
+        "vite.config.ts"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T19:23:56.556Z",
+      "updatedAt": "2026-08-30T19:24:23.004Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T19:24:23.004Z.",
+        "MVP M1-M3 umgesetzt: Module-Hub, Lick-Trainer mit Playback/Mic-Matching/Tempo-Gating. Build + tsc gruen."
+      ]
+    },
+    {
+      "id": "PLAN-004",
+      "agent": "ui-craftsman",
+      "title": "Cyberpunk/Akira Retro-Sync Theme",
+      "goal": "Neon-Glow, Scanlines, Grid, Glitch-Typo, animierte HUD-Karten und lebendige Module.",
+      "area": "styles,ui",
+      "files": [
+        "index.html",
+        "App.tsx",
+        "modules/ModuleHub.tsx",
+        "modules/LickTrainer.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T19:30:18.565Z",
+      "updatedAt": "2026-08-30T19:30:21.424Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T19:30:21.423Z.",
+        "Theme umgesetzt: Neon, Scanlines, Grid, Glitch, Cyber-Cards. Build + tsc gruen."
+      ]
+    },
+    {
+      "id": "PLAN-005",
+      "agent": "audio-engineer",
+      "title": "PDF-Import + Akira Cyber Theme",
+      "goal": "PDF-Text-Upload erklaert Licks aus digitalen PDFs; Akira/Neo-Tokyo Akzente.",
+      "area": "import,pdf,ui",
+      "files": [
+        "core/pdf.ts",
+        "modules/LickTrainer.tsx",
+        "index.html",
+        "package.json",
+        "docs/improvisation-studio-concept.md"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-30T21:36:12.022Z",
+      "updatedAt": "2026-08-30T21:36:14.536Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-30T21:36:14.536Z.",
+        "PDF-Import (M4) und Akira/Neo-Tokyo Akzente umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-006",
+      "agent": "harmonic-scout-core",
+      "title": "Enable Improvisation Coach module",
+      "goal": "Coach-Modul aktivieren: Live-Key-Detection, Skala/Fretboard-Fuehrung, Challenge-Game.",
+      "area": "modules,theory",
+      "files": [
+        "modules/ImprovisationStudio.tsx",
+        "modules/ImprovisationCoach.tsx",
+        "core/theory.ts",
+        "index.html"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T14:00:02.604Z",
+      "updatedAt": "2026-08-31T14:00:08.590Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T14:00:08.590Z.",
+        "Coach-Modul aktiv. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-007",
+      "agent": "ui-craftsman",
+      "title": "Rhythm Jam + Coach milestone extension",
+      "goal": "Rhythm-Jam-Modul und Coach-Tempo-Ramp bis zum naechsten Meilenstein.",
+      "area": "modules,rhythm,coach",
+      "files": [
+        "modules/RhythmJam.tsx",
+        "modules/ImprovisationCoach.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "core/metronome.ts",
+        "core/progress.ts",
+        "core/useProgress.ts"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T15:33:34.875Z",
+      "updatedAt": "2026-08-31T15:33:40.583Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T15:33:40.582Z.",
+        "Rhythm Jam + Coach-Tempo-Ramp umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-008",
+      "agent": "harmonic-scout-core",
+      "title": "Rhythm Guitar Jam Coach",
+      "goal": "Welche Akkorde passen, wie sie klingen, welche Noten wann und warum - mit Fretboard, Loop und Live-Check.",
+      "area": "harmony,jam-coach",
+      "files": [
+        "core/harmony.ts",
+        "modules/JamCoach.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "index.html"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T15:46:30.323Z",
+      "updatedAt": "2026-08-31T15:46:33.097Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T15:46:33.097Z.",
+        "Jam-Coach umgesetzt: Akkord-Progression, Klaenge, Fretboard, Noten-wann-warum, Live-Check. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-009",
+      "agent": "harmonic-scout-core",
+      "title": "Real chord grips + special features",
+      "goal": "Echte Griffbilder, wo gespielte Note liegt, Position Finder - plus Sonderideen fuer Projekt-Identitaet.",
+      "area": "shapes,chord-diagram,coach",
+      "files": [
+        "core/chordShapes.ts",
+        "components/ChordDiagram.tsx",
+        "modules/JamCoach.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T16:06:21.513Z",
+      "updatedAt": "2026-08-31T16:06:24.887Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T16:06:24.887Z.",
+        "Echte Akkord-Griffbilder + Position Finder im Jam-Coach umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-010",
+      "agent": "ui-craftsman",
+      "title": "All growth features + interactive design prototypes",
+      "goal": "Song-Fake-Book, Guide-Tone-Routing, Position-Lens, Auditiv-Feedback, adaptives Tempo, Session-Export und interaktive Design-Protypen.",
+      "area": "design,songs,guide,adaptive,export,feedback",
+      "files": [
+        "core/themes.ts",
+        "core/useTheme.ts",
+        "core/feedbackSound.ts",
+        "core/sessionExport.ts",
+        "core/songs.ts",
+        "core/chordShapes.ts",
+        "core/harmony.ts",
+        "components/ChordDiagram.tsx",
+        "modules/DesignLab.tsx",
+        "modules/JamCoach.tsx",
+        "modules/RhythmJam.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "modules/ModuleHub.tsx",
+        "App.tsx",
+        "index.html"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T17:01:57.396Z",
+      "updatedAt": "2026-08-31T17:02:06.310Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T17:02:06.310Z.",
+        "Alle Wachstums-Features + interaktive Design-Protypen umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-011",
+      "agent": "ui-craftsman",
+      "title": "Theory quiz, ear training, direct theme switcher",
+      "goal": "Spielerisches Theorie-Quiz und Gehörbildung plus direkt interaktive Design-Protypen im Header.",
+      "area": "theory,ear,design",
+      "files": [
+        "core/quiz.ts",
+        "core/ear.ts",
+        "modules/TheoryQuiz.tsx",
+        "modules/EarTraining.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "App.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T17:06:26.833Z",
+      "updatedAt": "2026-08-31T17:06:26.871Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T17:06:26.871Z.",
+        "Theorie-Quiz, Gehörbildung und direkter Theme-Switcher umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-012",
+      "agent": "ui-craftsman",
+      "title": "Lick-Bibliothek + direkt interaktive Design-Protypen",
+      "goal": "Lick-Bibliothek mit Genre-Filter, Anhören und Sprung in den Lick-Trainer; DesignLab-Karten und neue Themes direkt per Klick aktivierbar.",
+      "area": "licks,library,design",
+      "files": [
+        "core/licks.ts",
+        "core/library.ts",
+        "modules/LickLibrary.tsx",
+        "modules/LickTrainer.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "modules/DesignLab.tsx",
+        "core/themes.ts",
+        "index.html"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T18:13:35.733Z",
+      "updatedAt": "2026-08-31T18:15:04.456Z",
+      "dependsOn": [],
+      "notes": [
+        "Uncommitted, tsc + build gruen.",
+        "Status changed to done at 2026-08-31T18:15:04.456Z.",
+        "Lick-Bibliothek mit Genre-Filter, Vorschau + Sprung in den Lick-Trainer; DesignLab-Karten und 2 neue Themes direkt per Klick aktivierbar. tsc + build gruen."
+      ]
+    }
+  ]
+}
