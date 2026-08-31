@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31T17:02:06.310Z",
+  "updatedAt": "2026-08-31T17:06:26.871Z",
   "repo": "GuitarRecognitionJam",
   "coordination": {
     "singleSourceOfTruth": ".agent/plans.json",
@@ -280,6 +280,29 @@
       "notes": [
         "Status changed to done at 2026-08-31T17:02:06.310Z.",
         "Alle Wachstums-Features + interaktive Design-Protypen umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-011",
+      "agent": "ui-craftsman",
+      "title": "Theory quiz, ear training, direct theme switcher",
+      "goal": "Spielerisches Theorie-Quiz und Gehörbildung plus direkt interaktive Design-Protypen im Header.",
+      "area": "theory,ear,design",
+      "files": [
+        "core/quiz.ts",
+        "core/ear.ts",
+        "modules/TheoryQuiz.tsx",
+        "modules/EarTraining.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "App.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T17:06:26.833Z",
+      "updatedAt": "2026-08-31T17:06:26.871Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T17:06:26.871Z.",
+        "Theorie-Quiz, Gehörbildung und direkter Theme-Switcher umgesetzt. tsc + build gruen."
       ]
     }
   ]

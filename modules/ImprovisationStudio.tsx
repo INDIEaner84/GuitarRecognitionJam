@@ -5,6 +5,8 @@ import { ImprovisationCoach } from './ImprovisationCoach';
 import { RhythmJam } from './RhythmJam';
 import { JamCoach } from './JamCoach';
 import { DesignLab } from './DesignLab';
+import { TheoryQuiz } from './TheoryQuiz';
+import { EarTraining } from './EarTraining';
 import { useProgress } from '../core/useProgress';
 import { useTheme } from '../core/useTheme';
 import { LickProgress } from '../core/licks';
@@ -13,7 +15,7 @@ export const ImprovisationStudio: React.FC = () => {
   const { player, reset } = useProgress();
   const { current } = useTheme();
   const [view, setView] = useState<
-    'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam' | 'jam-coach' | 'design-lab'
+    'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam' | 'jam-coach' | 'design-lab' | 'theory-quiz' | 'ear-training'
   >('hub');
 
   const lickProgress = player.modules.lickTrainer.licks;
@@ -91,6 +93,24 @@ export const ImprovisationStudio: React.FC = () => {
       onClick: () => setView('jam-coach'),
     },
     {
+      id: 'theory-quiz',
+      title: 'Theorie-Quiz',
+      description: 'Intervalle, Skalen und Akkorde spielerisch abfragen mit Erklärung und XP.',
+      icon: '🎯',
+      available: true,
+      progress: 0,
+      onClick: () => setView('theory-quiz'),
+    },
+    {
+      id: 'ear-training',
+      title: 'Gehörbildung',
+      description: 'Note/Intervall/Akkord hören und dann erkennen — dein Ohr trainieren.',
+      icon: '👂',
+      available: true,
+      progress: 0,
+      onClick: () => setView('ear-training'),
+    },
+    {
       id: 'design-lab',
       title: 'Design-Lab',
       description: `Interaktive Design-Prototypen wählen — aktuell: ${current.name}.`,
@@ -128,6 +148,14 @@ export const ImprovisationStudio: React.FC = () => {
 
   if (view === 'design-lab') {
     return <DesignLab onBack={() => setView('hub')} />;
+  }
+
+  if (view === 'theory-quiz') {
+    return <TheoryQuiz onBack={() => setView('hub')} />;
+  }
+
+  if (view === 'ear-training') {
+    return <EarTraining onBack={() => setView('hub')} />;
   }
 
   return <ModuleHub modules={modules} player={player} onReset={reset} />;

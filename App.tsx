@@ -6,6 +6,7 @@ import { ScaleVisualizer, ModeVisualizer, FretboardMini } from './components/Sca
 import { SpeedTrainer } from './components/SpeedTrainer';
 import { ImprovisationStudio } from './modules/ImprovisationStudio';
 import { useTheme } from './core/useTheme';
+import { THEMES } from './core/themes';
 import { getNoteFromFrequency, identifyChord } from './constants';
 import { analyzeMusicalContext } from './services/geminiService';
 import { NoteData, ScaleAnalysis } from './types';
@@ -74,7 +75,7 @@ const autoCorrelate = (buf: Float32Array, sampleRate: number): number => {
 };
 
 const App: React.FC = () => {
-  useTheme();
+  const { themeId, setThemeId } = useTheme();
   const [activeTab, setActiveTab] = useState<'analysis' | 'trainer' | 'studio'>('analysis');
   const [isListening, setIsListening] = useState(false);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
@@ -275,7 +276,20 @@ const App: React.FC = () => {
            </button>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          {/* Direct interactive design-prototype switcher */}
+          <div className="flex items-center gap-1.5 bg-slate-950/60 border border-cyan-500/20 rounded-lg px-2 py-1.5" title="Design-Prototyp direkt aktivieren">
+            {THEMES.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setThemeId(t.id)}
+                className={`w-4 h-4 rounded-full transition-all ring-2 ${themeId === t.id ? 'ring-white scale-125' : 'ring-transparent hover:scale-110'}`}
+                style={{ background: `linear-gradient(135deg, ${t.colors.cyan}, ${t.colors.magenta})` }}
+                aria-label={t.name}
+                title={t.name}
+              />
+            ))}
+          </div>
           <button 
             onClick={() => { setDetectedNotes(new Set()); setAnalysis(null); }} 
             className="cyber-btn px-4 py-2 text-xs font-bold rounded-md transition-all uppercase tracking-widest text-slate-400 hover:text-white"

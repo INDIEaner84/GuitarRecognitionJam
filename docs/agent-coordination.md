@@ -9,7 +9,7 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-08-31T17:02:06.310Z
+Aktualisiert: 2026-08-31T17:06:26.871Z
 
 ## Agents
 
@@ -17,7 +17,7 @@ Aktualisiert: 2026-08-31T17:02:06.310Z
 | --- | --- | --- | --- |
 | `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/6 |
 | `audio-engineer` | Pitch detection, autocorrelation, Tone.js playback, audio routing | available | 0/1 |
-| `ui-craftsman` | React components, layout, styling, accessibility | available | 0/3 |
+| `ui-craftsman` | React components, layout, styling, accessibility | available | 0/4 |
 | `ai-context-engineer` | Gemini service, prompts, response schemas, analysis types | available | 0/0 |
 
 ## Aktive Vorhaben
@@ -154,6 +154,19 @@ _Keine aktiven Vorhaben._
 **Notizen:**
 - Status changed to done at 2026-08-31T17:02:06.310Z.
 - Alle Wachstums-Features + interaktive Design-Protypen umgesetzt. tsc + build gruen.
+
+### PLAN-011 — Theory quiz, ear training, direct theme switcher
+
+- **Agent:** `ui-craftsman`
+- **Status:** 🟢 done
+- **Bereich:** theory,ear,design
+- **Betroffene Dateien:** core/quiz.ts, core/ear.ts, modules/TheoryQuiz.tsx, modules/EarTraining.tsx, modules/ImprovisationStudio.tsx, App.tsx
+
+**Ziel:** Spielerisches Theorie-Quiz und Gehörbildung plus direkt interaktive Design-Protypen im Header.
+
+**Notizen:**
+- Status changed to done at 2026-08-31T17:06:26.871Z.
+- Theorie-Quiz, Gehörbildung und direkter Theme-Switcher umgesetzt. tsc + build gruen.
 
 
 ## Workflow
