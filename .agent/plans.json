@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31T15:46:33.097Z",
+  "updatedAt": "2026-08-31T16:06:24.887Z",
   "repo": "GuitarRecognitionJam",
   "coordination": {
     "singleSourceOfTruth": ".agent/plans.json",
@@ -228,6 +228,26 @@
       "notes": [
         "Status changed to done at 2026-08-31T15:46:33.097Z.",
         "Jam-Coach umgesetzt: Akkord-Progression, Klaenge, Fretboard, Noten-wann-warum, Live-Check. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-009",
+      "agent": "harmonic-scout-core",
+      "title": "Real chord grips + special features",
+      "goal": "Echte Griffbilder, wo gespielte Note liegt, Position Finder - plus Sonderideen fuer Projekt-Identitaet.",
+      "area": "shapes,chord-diagram,coach",
+      "files": [
+        "core/chordShapes.ts",
+        "components/ChordDiagram.tsx",
+        "modules/JamCoach.tsx"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T16:06:21.513Z",
+      "updatedAt": "2026-08-31T16:06:24.887Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T16:06:24.887Z.",
+        "Echte Akkord-Griffbilder + Position Finder im Jam-Coach umgesetzt. tsc + build gruen."
       ]
     }
   ]

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FretboardMini } from '../components/ScaleVisualizer';
+import { ChordDiagram } from '../components/ChordDiagram';
+import { buildChordShape, allPositionsForPitch } from '../core/chordShapes';
 import { usePitchStream } from '../core/usePitchStream';
 import { useProgress } from '../core/useProgress';
 import { LickPlayer } from '../core/playback';
@@ -84,6 +86,16 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
     activeFit && activePc
       ? reasonForFit(keyScale.findIndex((k) => pitchClassName(k) === activePc), activeFit, selectedChord)
       : null;
+
+  const selectedShape = useMemo(
+    () => buildChordShape(selectedChord.rootIndex, selectedChord.def),
+    [selectedChord],
+  );
+
+  const activePcIndex = activePc
+    ? ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'].indexOf(activePc)
+    : null;
+  const activePositions = activePcIndex != null ? allPositionsForPitch(activePcIndex) : [];
 
   // Detected notes panel (uses same pitch stream, just for awareness)
   useEffect(() => {
@@ -274,12 +286,42 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
             <span className="cyber-mono text-[9px] uppercase tracking-widest text-slate-500">Funktion</span>
             <p className="text-[11px] text-slate-300">{selectedChord.function}</p>
           </div>
-          <button
-            onClick={playChord}
-            className="cyber-btn cyber-btn-amber px-3 py-1.5 text-[10px] font-black uppercase tracking-widest"
-          >
-            ♪ Hör-Test
-          </button>
+
+          <ChordDiagram
+            shape={selectedShape}
+            label={`Griffbild ${selectedShape?.label ?? selectedChord.degree}`}
+            highlightPitchClass={activePcIndex}
+          />
+
+          {activePositions.length > 0 && (
+            <div className="mt-3 border border-green-500/20 bg-green-500/5 rounded-lg p-3">
+              <div className="cyber-mono text-[9px] uppercase tracking-widest text-green-300 mb-2">
+                ▸ Wo du {activePc} spielst / spielen könntest
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {activePositions
+                  .filter((p) => selectedShape?.positions.some((sp) => sp.pitchClass === p.pitchClass))
+                  .slice(0, 12)
+                  .map((p, i) => (
+                    <span key={i} className="px-2 py-1 rounded border border-green-500/30 text-[9px] font-mono text-green-200">
+                      {p.string + 1}-{p.fret}
+                    </span>
+                  ))}
+              </div>
+              <p className="cyber-mono text-[9px] text-slate-400 mt-2">
+                Diese Positionen klingen über {selectedChord.degree}. Root/3rd/5th/7th sind im Diagramm farbig markiert.
+              </p>
+            </div>
+          )}
+
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={playChord}
+              className="cyber-btn cyber-btn-amber px-3 py-1.5 text-[10px] font-black uppercase tracking-widest"
+            >
+              ♪ Hör-Test
+            </button>
+          </div>
         </div>
       </div>
 
