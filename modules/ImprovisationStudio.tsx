@@ -3,12 +3,13 @@ import { ModuleHub } from './ModuleHub';
 import { LickTrainer } from './LickTrainer';
 import { ImprovisationCoach } from './ImprovisationCoach';
 import { RhythmJam } from './RhythmJam';
+import { JamCoach } from './JamCoach';
 import { useProgress } from '../core/useProgress';
 import { LickProgress } from '../core/licks';
 
 export const ImprovisationStudio: React.FC = () => {
   const { player, reset } = useProgress();
-  const [view, setView] = useState<'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam'>('hub');
+  const [view, setView] = useState<'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam' | 'jam-coach'>('hub');
 
   const lickProgress = player.modules.lickTrainer.licks;
   const lickValues: LickProgress[] = Object.values(lickProgress);
@@ -75,6 +76,16 @@ export const ImprovisationStudio: React.FC = () => {
       onClick: () => setView('rhythm-jam'),
     },
     {
+      id: 'jam-coach',
+      title: 'Rhythm-Guitar Coach',
+      description:
+        'Welche Akkorde passen, wie sie klingen, und welche Noten wann — mit Fretboard, Live-Check und Erklärung.',
+      icon: '🎼',
+      available: true,
+      progress: 0.3,
+      onClick: () => setView('jam-coach'),
+    },
+    {
       id: 'library',
       title: 'Lick-Bibliothek',
       description: 'Fertige Licks für Blues, Rock, Jazz und Country.',
@@ -95,6 +106,10 @@ export const ImprovisationStudio: React.FC = () => {
 
   if (view === 'rhythm-jam') {
     return <RhythmJam onBack={() => setView('hub')} />;
+  }
+
+  if (view === 'jam-coach') {
+    return <JamCoach onBack={() => setView('hub')} />;
   }
 
   return <ModuleHub modules={modules} player={player} onReset={reset} />;

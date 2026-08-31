@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31T15:33:40.583Z",
+  "updatedAt": "2026-08-31T15:46:33.097Z",
   "repo": "GuitarRecognitionJam",
   "coordination": {
     "singleSourceOfTruth": ".agent/plans.json",
@@ -207,6 +207,27 @@
       "notes": [
         "Status changed to done at 2026-08-31T15:33:40.582Z.",
         "Rhythm Jam + Coach-Tempo-Ramp umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-008",
+      "agent": "harmonic-scout-core",
+      "title": "Rhythm Guitar Jam Coach",
+      "goal": "Welche Akkorde passen, wie sie klingen, welche Noten wann und warum - mit Fretboard, Loop und Live-Check.",
+      "area": "harmony,jam-coach",
+      "files": [
+        "core/harmony.ts",
+        "modules/JamCoach.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "index.html"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T15:46:30.323Z",
+      "updatedAt": "2026-08-31T15:46:33.097Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T15:46:33.097Z.",
+        "Jam-Coach umgesetzt: Akkord-Progression, Klaenge, Fretboard, Noten-wann-warum, Live-Check. tsc + build gruen."
       ]
     }
   ]

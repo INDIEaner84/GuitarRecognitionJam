@@ -9,13 +9,13 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-08-31T15:33:40.583Z
+Aktualisiert: 2026-08-31T15:46:33.097Z
 
 ## Agents
 
 | ID | Rolle | Status | Pläne aktiv/gesamt |
 | --- | --- | --- | --- |
-| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/4 |
+| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/5 |
 | `audio-engineer` | Pitch detection, autocorrelation, Tone.js playback, audio routing | available | 0/1 |
 | `ui-craftsman` | React components, layout, styling, accessibility | available | 0/2 |
 | `ai-context-engineer` | Gemini service, prompts, response schemas, analysis types | available | 0/0 |
@@ -115,6 +115,19 @@ _Keine aktiven Vorhaben._
 **Notizen:**
 - Status changed to done at 2026-08-31T15:33:40.582Z.
 - Rhythm Jam + Coach-Tempo-Ramp umgesetzt. tsc + build gruen.
+
+### PLAN-008 — Rhythm Guitar Jam Coach
+
+- **Agent:** `harmonic-scout-core`
+- **Status:** 🟢 done
+- **Bereich:** harmony,jam-coach
+- **Betroffene Dateien:** core/harmony.ts, modules/JamCoach.tsx, modules/ImprovisationStudio.tsx, index.html
+
+**Ziel:** Welche Akkorde passen, wie sie klingen, welche Noten wann und warum - mit Fretboard, Loop und Live-Check.
+
+**Notizen:**
+- Status changed to done at 2026-08-31T15:46:33.097Z.
+- Jam-Coach umgesetzt: Akkord-Progression, Klaenge, Fretboard, Noten-wann-warum, Live-Check. tsc + build gruen.
 
 
 ## Workflow
