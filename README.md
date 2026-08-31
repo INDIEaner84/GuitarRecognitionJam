@@ -1,48 +1,115 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+
+![Harmonic Scout Banner](docs/banner.png)
+
+# 🎸 Harmonic Scout
+
+**Cyberpunk / Akira-Style Gitarren-Trainer** — Live-Tonerkennung, Lick-Training, Improvisation, Gehörbildung & Design-Switcher in einer lokal laufenden Web-App.
+
+*"楽譜を発見せよ — Finde das Notenblatt."*
+
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue) ![React](https://img.shields.io/badge/React-19-61dafb) ![Vite](https://img.shields.io/badge/Vite-6-646cff) ![Tone.js](https://img.shields.io/badge/Tone.js-15-d81b60) ![License](https://img.shields.io/badge/license-private-lightgrey)
+
 </div>
 
-# Run and deploy your AI Studio app
+---
 
-This contains everything you need to run your app locally.
+## ✨ Was ist Harmonic Scout?
 
-View your app in AI Studio: https://ai.studio/apps/drive/1gO0A24r1hXV--dg9UZRPvIhzaW-JpmSZ
+Harmonic Scout ist ein **interaktives Improvisations-Studio für Gitarre**, gebaut als moderne Web-App mit Retro-Sync-/Neon-Ästhetik. Du spielst eine Note, die App erkennt sie **live über das Mikrofon** und führt dich mit Fretboards, Tonart-/Skala-Analyse und spielerischen Trainingsmodulen zu mehr Sicherheit und Tempo.
 
-## Agent Coordination (Single Source of Truth)
+Alles läuft **lokal im Browser** — kein Server, kein Backend, keine Cloud-Pflicht. Fortschritt, XP und Streak werden lokal gespeichert.
 
-This repository has a built-in coordination layer so multiple agents can
-work in parallel without stepping on each other.
+## 🚀 Kernfunktionen
 
-- **Machine-readable source of truth:** `.agent/plans.json`
-- **Human dashboard:** `docs/agent-coordination.md`
-- **Protocol for agents:** `AGENTS.md`
-- **CLI:** `scripts/agent-coordination.mjs`
+| Modul | Was es macht |
+| --- | --- |
+| **Lick-Trainer** | Lick anhören, Noten/Tabs sehen, mit dem Mikrofon nachspielen. Tempo steigt nur bei korrekter Note + sauberem Timing. |
+| **Lick-Bibliothek** | Fertige Licks für Blues, Rock, Jazz, Folk, Metal & Reggae — mit Genre-Filter, Vorspiel und direktem Sprung in den Trainer. |
+| **Improvisations-Coach** | Live-Tonart- & Skalaerkennung, Fretboard-Führung, Challenge mit Tempo-Ramp. |
+| **Rhythm-Guitar Coach** | Passende Akkorde, Klangbeispiele, Guide-Tone-Routing, Position-Lens und Live-Check. |
+| **Rhythm Jam** | Timing gegen Metronom, adaptives Tempo, auditive Feedback-Blips. |
+| **Theorie-Quiz** | Intervalle, Skalen & Akkorde spielerisch abfragen — mit Erklärung und XP. |
+| **Gehörbildung** | Note / Intervall / Akkord hören und erkennen, mit Tone.js Playback. |
+| **Design-Lab** | 7 direkt interaktive Theme-Prototypen (Neo-Tokyo, Vaporwave, Retro-CRT, Midnight-Jazz, Miami, Inferno Red, Aurora Ice) — ein Klick färbt die ganze App um. |
 
-Agents must announce their files before editing and check for conflicts
-before committing:
+## 🎯 Besonderheiten
+
+- **🎨 Direkt interaktive Designs** — 7 Themes, jederzeit über Farbpunkte im Header umschaltbar.
+- **🎵 Auditives Feedback** — Ton-Blips für richtig/falsch/zu früh/zu spät (Tone.js).
+- **📈 Adaptives Tempo** — wird bei Fehlern gesenkt, bei Erfolg erhöht.
+- **📄 PDF-Import (Text-Ebene)** — digitale Tabs/Noten mit Textschicht einlesen; kein OCR/Scan.
+- **🎸 Echte Akkord-Griffbilder** — String-/Fret-Diagramme im Coach.
+- **📊 Session-Export** — Fortschritt als JSON downloaden oder als Lernkarte kopieren.
+- **🏆 Lokale Gamification** — XP, Level, Streak, Sterne, Fortschritt.
+
+## 🧠 Architektur & Technik
+
+- **React 19 + TypeScript + Vite**
+- **Web Audio / Autokorrelation** für latenzarme Tonhöhen- & Akkorderkennung
+- **Tone.js** für Synthesizer-Playback, Metronom und Feedback
+- **pdfjs-dist** für die Text-Ebene des PDF-Imports
+- **@google/genai** optionale musikalische Kontext-Analyse (Gemini)
+
+```
+App.tsx                  → App-Shell, Mikrofon-Loop, Themes, Navigation
+modules/                 → Lick-Trainer, Studios, Quiz, Gehörbildung, Design-Lab
+core/                    → Licks, Harmonie, Themes, Songs, Quiz, Ear, Export, Sound
+components/              → Fretboards, Akkord-Diagramme, Visualizer
+.agent/plans.json        → Single Source of Truth der Agenten-Koordination
+scripts/agent-coordination.mjs → CLI für Pläne & Konflikte
+```
+
+## 🚦 Installation & Start
+
+**Voraussetzungen:** Node.js 18+
 
 ```bash
-node scripts/agent-coordination.mjs announce \
-  --agent ui-craftsman \
-  --plan "Refine SpeedTrainer layout" \
-  --area components \
-  --files "components/SpeedTrainer.tsx,App.tsx"
+npm install
+npm run dev      # Entwicklungs-Server → http://localhost:3000
+```
 
-node scripts/agent-coordination.mjs guard \
-  --agent ui-craftsman --files "components/SpeedTrainer.tsx"
+Optional (musikalische Analyse): `GEMINI_API_KEY` in `.env.local` setzen.
 
-node scripts/agent-coordination.mjs update --plan PLAN-002 --status done
+Produktions-Build:
+
+```bash
+npm run build
+npm run preview
+```
+
+## 🗺️ Roadmap / Status
+
+Alle aktuell geplanten Module sind **online**:
+
+- [x] Module Hub + Lick-Trainer (PDF & Mikrofon)
+- [x] Improvisations-Coach (Live-Key, Fretboard, Tempo-Ramp)
+- [x] Rhythm Jam / Rhythm-Guitar Coach
+- [x] Reale Akkord-Griffbilder & Position Finder
+- [x] Song-Fake-Book, Guide-Tone-Routing, Position-Lens
+- [x] Theorie-Quiz & Gehörbildung
+- [x] Lick-Bibliothek & direkt interaktive Design-Prototypen
+
+## 🤝 Agenten-Koordination
+
+Das Repo hat eine eingebaute Koordinationsschicht für parallele Agenten:
+
+- **Machine-readable Single Source of Truth:** `.agent/plans.json`
+- **Dashboard:** `docs/agent-coordination.md`
+- **Protokoll:** `AGENTS.md`
+- **CLI:** `scripts/agent-coordination.mjs`
+
+```bash
+node scripts/agent-coordination.mjs announce --agent ui-craftsman --plan "..." --files "..."
+node scripts/agent-coordination.mjs update --plan PLAN-012 --status done
 node scripts/agent-coordination.mjs status
 node scripts/agent-coordination.mjs dashboard
 ```
 
-## Run Locally
+---
 
-**Prerequisites:**  Node.js
+<div align="center">
 
+**Harmonic Scout** · NEO•TOKYO//SOUND.LAB · Retro-Sync meets Guitar Practice 🎸⚡
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+</div>
