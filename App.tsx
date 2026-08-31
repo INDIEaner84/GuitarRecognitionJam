@@ -5,6 +5,7 @@ import { SuggestionCard, Tablature, PlayRiffButton, PlayProgressionButton } from
 import { ScaleVisualizer, ModeVisualizer, FretboardMini } from './components/ScaleVisualizer';
 import { SpeedTrainer } from './components/SpeedTrainer';
 import { ImprovisationStudio } from './modules/ImprovisationStudio';
+import { useTheme } from './core/useTheme';
 import { getNoteFromFrequency, identifyChord } from './constants';
 import { analyzeMusicalContext } from './services/geminiService';
 import { NoteData, ScaleAnalysis } from './types';
@@ -73,6 +74,7 @@ const autoCorrelate = (buf: Float32Array, sampleRate: number): number => {
 };
 
 const App: React.FC = () => {
+  useTheme();
   const [activeTab, setActiveTab] = useState<'analysis' | 'trainer' | 'studio'>('analysis');
   const [isListening, setIsListening] = useState(false);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);

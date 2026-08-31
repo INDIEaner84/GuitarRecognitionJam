@@ -270,6 +270,31 @@ export const reasonForFit = (
   }
 };
 
+export interface GuideTone {
+  pitchClass: number;
+  noteName: string;
+  label: string;
+  reason: string;
+}
+
+export const guideToneForChord = (chord: ChordInKey): GuideTone => {
+  const isDominant = chord.qualityId === 'dom7';
+  const isMin = chord.qualityId.startsWith('min');
+  const thirdInterval = isMin ? 3 : 4;
+  const pitchClass =
+    isDominant
+      ? (chord.rootIndex + 10) % 12
+      : (chord.rootIndex + thirdInterval) % 12;
+  return {
+    pitchClass,
+    noteName: pitchClassName(pitchClass),
+    label: isDominant ? 'b7' : isMin ? 'b3' : '3',
+    reason: isDominant
+      ? `Dominante von ${chord.degree} → b7 zieht kraftvoll zurück zur Tonika.`
+      : `Terz von ${chord.degree} → definiert Dur/Moll und klingt charakteristisch.`,
+  };
+};
+
 export const buildRhythmLick = (
   keyIndex: number,
   mode: JamMode,

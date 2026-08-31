@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PlayerProgress } from '../core/progress';
+import { useTheme } from '../core/useTheme';
+import { downloadSession, copySessionSummary } from '../core/sessionExport';
 
 export interface StudioModule {
   id: string;
@@ -18,6 +20,15 @@ interface ModuleHubProps {
 }
 
 export const ModuleHub: React.FC<ModuleHubProps> = ({ modules, player, onReset }) => {
+  const { current } = useTheme();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const ok = await copySessionSummary(player, current.name);
+    setCopied(ok);
+    setTimeout(() => setCopied(false), 1800);
+  };
+
   return (
     <div className="space-y-8 relative">
       <div className="stream-line" />
@@ -58,12 +69,26 @@ export const ModuleHub: React.FC<ModuleHubProps> = ({ modules, player, onReset }
               {player.streak} 🔥
             </div>
             <div className="cyber-mono text-[9px] text-slate-400 uppercase tracking-widest">Streak</div>
-            <button
-              onClick={onReset}
-              className="cyber-btn cyber-btn-magenta mt-4 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5"
-            >
-              Reset
-            </button>
+            <div className="mt-4 flex gap-2 justify-center flex-wrap">
+              <button
+                onClick={() => downloadSession(player, current.name)}
+                className="cyber-btn text-[9px] font-bold uppercase tracking-widest px-3 py-1.5"
+              >
+                ⬇ Session
+              </button>
+              <button
+                onClick={handleCopy}
+                className="cyber-btn cyber-btn-amber text-[9px] font-bold uppercase tracking-widest px-3 py-1.5"
+              >
+                {copied ? '✓ Kopiert' : '⬜ Lernkarte'}
+              </button>
+              <button
+                onClick={onReset}
+                className="cyber-btn cyber-btn-magenta text-[9px] font-bold uppercase tracking-widest px-3 py-1.5"
+              >
+                Reset
+              </button>
+            </div>
           </div>
         </div>
       </div>

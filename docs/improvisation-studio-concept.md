@@ -369,10 +369,12 @@ src/ (bzw. wird in bestehende Struktur eingepflegt)
 
 **Status (31.08.2026):** Module-Hub in `modules/ModuleHub.tsx`, Lick-Trainer in
 `modules/LickTrainer.tsx`, geteilte Logik in `core/` (audio, licks, playback,
-match, progress, pdf). Start über Tab **„Studio“** in `App.tsx`. PDF-Import
-(M4) ist umgesetzt: `core/pdf.ts` extrahiert die Text-Ebene aus digitalen PDFs
-(ASCII-Tab oder „Note + Beat/Dauer“) und erzeugt direkt `LickEvent[]`.
-Zusätzlich: Cyberpunk/Akira-Retro-Sync-Theme.
+match, progress, pdf, harmony, chordShapes, songs, themes, feedbackSound,
+sessionExport). Start über Tab **„Studio“** in `App.tsx`. PDF-Import
+(M4) und alle sechs Wachstums-Features sind umgesetzt: Song/Fake-Book,
+Guide-Tone-Routing, Position-Lens, auditives Feedback, adaptives Tempo,
+Session-Export — plus **interaktives Design-Lab** mit auswählbaren
+Design-Prototypen (Neo-Tokyo, Vaporwave, Retro-CRT, Midnight-Jazz, Miami).
 
 ---
 

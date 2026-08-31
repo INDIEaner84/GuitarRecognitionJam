@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Metronome } from '../core/metronome';
 import { usePitchStream } from '../core/usePitchStream';
 import { useProgress } from '../core/useProgress';
+import { playFeedback } from '../core/feedbackSound';
 import { sectionStarsForStreak } from '../core/progress';
 
 interface RhythmJamProps {
@@ -67,10 +68,13 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
   const [patternId, setPatternId] = useState('steady');
   const [noteFilter, setNoteFilter] = useState<'any' | 'A3' | 'E3' | 'G3'>('any');
   const [maxBars, setMaxBars] = useState(6);
+  const [adaptive, setAdaptive] = useState(true);
+  const [soundOn, setSoundOn] = useState(true);
 
   const [liveBpm, setLiveBpm] = useState(DEFAULT_TEMPO.startBpm);
   const [currentBeat, setCurrentBeat] = useState<number | null>(null);
   const [lastResult, setLastResult] = useState<BeatResult | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [results, setResults] = useState<BeatResult[]>([]);
   const [barCount, setBarCount] = useState(0);
   const [hits, setHits] = useState(0);
@@ -116,6 +120,7 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
     setMisses(0);
     setStreak(0);
     setBestStreak(0);
+    setFeedback(null);
     beatRef.current = null;
     prevNoteRef.current = null;
     hitsRef.current = 0;
@@ -190,6 +195,8 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
     setStreak(streakRef.current);
     setBestStreak(bestStreakRef.current);
 
+    if (soundOn) playFeedback(quality).catch(() => undefined);
+
     const isBarEnd = (b.index + 1) % pattern.length === 0;
     if (isBarEnd) {
       const barResults = resultsRef.current.slice(-pattern.length);
@@ -198,12 +205,20 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
         barResults.every((r) => r.quality === 'perfect' || r.quality === 'good' || r.quality === 'rest');
       barCountRef.current += 1;
       setBarCount(barCountRef.current);
+
+      const barMisses = barResults.filter((r) => r.quality === 'miss' || r.quality === 'extra').length;
       if (barClean) {
         const next = Math.min(liveBpmRef.current + tempo.stepBpm, tempo.maxBpm);
         liveBpmRef.current = next;
         setLiveBpm(next);
         metronomeRef.current?.setBpm(next);
         grant(12, 'rhythm-jam');
+      } else if (adaptive && barMisses >= 2) {
+        const next = Math.max(tempo.minBpm, liveBpmRef.current - tempo.stepBpm);
+        liveBpmRef.current = next;
+        setLiveBpm(next);
+        metronomeRef.current?.setBpm(next);
+        setFeedback(`Adaptive: Fehler im Takt → Tempo leicht gesenkt auf ${next} BPM`);
       }
     }
   };
@@ -351,6 +366,20 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
                 </label>
               </div>
             </div>
+            <div className="flex flex-wrap gap-2 mt-4">
+              <button
+                onClick={() => setAdaptive((a) => !a)}
+                className={`cyber-btn px-3 py-1.5 text-[9px] font-black uppercase tracking-widest ${adaptive ? 'cyber-btn-green' : ''}`}
+              >
+                {adaptive ? '● ADAPTIV' : '○ FIX'}
+              </button>
+              <button
+                onClick={() => setSoundOn((s) => !s)}
+                className={`cyber-btn px-3 py-1.5 text-[9px] font-black uppercase tracking-widest ${soundOn ? 'cyber-btn-amber' : ''}`}
+              >
+                {soundOn ? '🔔 TON' : '🔕 STUMM'}
+              </button>
+            </div>
             <div className="flex gap-3 mt-6">
               <button
                 onClick={start}
@@ -362,6 +391,7 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
             <p className="cyber-mono text-[10px] text-slate-400 mt-4">
               Spiele <span className="neon-amber">{noteFilterLabel}</span> genau auf dem Beat.
               Nach jedem sauberen Takt +{tempo.stepBpm} BPM bis {tempo.maxBpm} BPM.
+              {adaptive && ' · Fehler senken das Tempo automatisch.'}
             </p>
           </div>
           <div className="space-y-5">
@@ -435,6 +465,9 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
                 Beat {lastResult.index + 1} · erwartet {lastResult.expected === 'H' ? 'spielen' : 'Pause'}
               </span>
             </div>
+          )}
+          {feedback && (
+            <div className="cyber-mono text-[10px] text-amber-200 mb-6">{feedback}</div>
           )}
 
           <div className="flex gap-3">

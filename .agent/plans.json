@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31T16:06:24.887Z",
+  "updatedAt": "2026-08-31T17:02:06.310Z",
   "repo": "GuitarRecognitionJam",
   "coordination": {
     "singleSourceOfTruth": ".agent/plans.json",
@@ -248,6 +248,38 @@
       "notes": [
         "Status changed to done at 2026-08-31T16:06:24.887Z.",
         "Echte Akkord-Griffbilder + Position Finder im Jam-Coach umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-010",
+      "agent": "ui-craftsman",
+      "title": "All growth features + interactive design prototypes",
+      "goal": "Song-Fake-Book, Guide-Tone-Routing, Position-Lens, Auditiv-Feedback, adaptives Tempo, Session-Export und interaktive Design-Protypen.",
+      "area": "design,songs,guide,adaptive,export,feedback",
+      "files": [
+        "core/themes.ts",
+        "core/useTheme.ts",
+        "core/feedbackSound.ts",
+        "core/sessionExport.ts",
+        "core/songs.ts",
+        "core/chordShapes.ts",
+        "core/harmony.ts",
+        "components/ChordDiagram.tsx",
+        "modules/DesignLab.tsx",
+        "modules/JamCoach.tsx",
+        "modules/RhythmJam.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "modules/ModuleHub.tsx",
+        "App.tsx",
+        "index.html"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T17:01:57.396Z",
+      "updatedAt": "2026-08-31T17:02:06.310Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-08-31T17:02:06.310Z.",
+        "Alle Wachstums-Features + interaktive Design-Protypen umgesetzt. tsc + build gruen."
       ]
     }
   ]

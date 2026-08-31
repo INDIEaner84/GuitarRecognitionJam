@@ -22,6 +22,28 @@
       color: #f8fafc;
     }
 
+    /* ---------- Design prototypes (interactive theme switching) ---------- */
+    html[data-cyber-theme="neon-tokyo"] {
+      --cyber-cyan: #00f0ff; --cyber-magenta: #ff2a6d; --cyber-amber: #f9f002;
+      --cyber-purple: #9d00ff; --cyber-green: #39ff14; --cyber-bg: #04060f;
+    }
+    html[data-cyber-theme="vaporwave"] {
+      --cyber-cyan: #00e5ff; --cyber-magenta: #ff66d9; --cyber-amber: #ffcc00;
+      --cyber-purple: #8a2be2; --cyber-green: #00ffc3; --cyber-bg: #120a2a;
+    }
+    html[data-cyber-theme="retro-crt"] {
+      --cyber-cyan: #39ff14; --cyber-magenta: #c6ff00; --cyber-amber: #f9f002;
+      --cyber-purple: #39ff14; --cyber-green: #39ff14; --cyber-bg: #020802;
+    }
+    html[data-cyber-theme="midnight-jazz"] {
+      --cyber-cyan: #5d6d7e; --cyber-magenta: #d4a017; --cyber-amber: #ffb347;
+      --cyber-purple: #b8860b; --cyber-green: #c0c0c0; --cyber-bg: #0a0a12;
+    }
+    html[data-cyber-theme="miami"] {
+      --cyber-cyan: #00e5ff; --cyber-magenta: #ff007f; --cyber-amber: #ffd166;
+      --cyber-purple: #7b2ff7; --cyber-green: #00ffd5; --cyber-bg: #1a0b2e;
+    }
+
     .cyber-app {
       position: relative;
       min-height: 100vh;

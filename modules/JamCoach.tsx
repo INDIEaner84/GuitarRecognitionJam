@@ -10,17 +10,23 @@ import {
   JamMode,
   PROGRESSIONS,
   ProgressionDef,
+  ProgressionStep,
   ChordInKey,
-  chordPitchClasses,
+  GuideTone,
   classifyNote,
+  guideToneForChord,
   keyScalePitchClasses,
   noteChoicesForChord,
   progressionChords,
   reasonForFit,
   buildRhythmLick,
-  CHORD_DEFS,
 } from '../core/harmony';
+import { SONG_CATALOG, EXTRA_PROGRESSIONS, SongPreset } from '../core/songs';
+import { playFeedback } from '../core/feedbackSound';
 import { sectionStarsForStreak } from '../core/progress';
+import { useTheme } from '../core/useTheme';
+
+const ALL_PROGRESSIONS: ProgressionDef[] = [...PROGRESSIONS, ...EXTRA_PROGRESSIONS];
 
 interface JamCoachProps {
   onBack: () => void;
@@ -40,11 +46,17 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
   const [chordBpm, setChordBpm] = useState(TEMPO.startBpm);
   const [isLooping, setIsLooping] = useState(false);
   const [loopTick, setLoopTick] = useState(0);
+  const [songId, setSongId] = useState('');
+  const [guideOn, setGuideOn] = useState(true);
+  const [soundOn, setSoundOn] = useState(true);
+  const [lensFret, setLensFret] = useState(4);
+  const [nextGuide, setNextGuide] = useState<GuideTone | null>(null);
+  const activePcRef = useRef<string | null>(null);
 
   const playerRef = useRef<LickPlayer | null>(null);
 
   const progression: ProgressionDef =
-    PROGRESSIONS.find((p) => p.id === progressionId) ?? PROGRESSIONS[0];
+    ALL_PROGRESSIONS.find((p) => p.id === progressionId) ?? ALL_PROGRESSIONS[0];
 
   const chords = useMemo(
     () => progressionChords(keyIndex, mode, progression.steps),
@@ -135,6 +147,8 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
       onEventStart: (event) => {
         const idx = Number(event.id.replace('chord-', ''));
         setSelectedStep(idx);
+        const next = chords[(idx + 1) % chords.length];
+        setNextGuide(guideOn ? guideToneForChord(next) : null);
         setLoopTick((t) => t + 1);
       },
       onEventEnd: () => undefined,
@@ -143,6 +157,32 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
       },
     });
   };
+
+  const applySong = (song: SongPreset) => {
+    setSongId(song.id);
+    setMode(song.mode);
+    setKeyIndex(song.defaultKey);
+    setProgressionId(song.progressionId);
+    setSelectedStep(0);
+    setNextGuide(null);
+  };
+
+  // Auditory feedback on which note the player plays (only when sound enabled).
+  useEffect(() => {
+    if (!soundOn || !activePc || !activeFit) return;
+    if (activePcRef.current === activePc) return;
+    activePcRef.current = activePc;
+    const kind = activeFit === 'chord-tone' ? 'correct' : activeFit === 'guide-tone' ? 'guide' : 'wrong';
+    playFeedback(kind).catch(() => undefined);
+  }, [activePc, activeFit, soundOn]);
+
+  // Guide-tone "routing" help while the loop is playing (even without mic).
+  const nextChord = guideOn ? chords[(selectedStep + 1) % chords.length] : null;
+  const effectiveGuide = nextGuide ?? (nextChord ? guideToneForChord(nextChord) : null);
+
+  const lensForChord = selectedShape?.positions
+    .filter((p) => Math.abs(p.fret - lensFret) <= 2)
+    .sort((a, b) => Math.abs(a.fret - lensFret) - Math.abs(b.fret - lensFret)) ?? [];
 
   const stopLoop = async () => {
     await playerRef.current?.stop();
@@ -250,7 +290,7 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
               onChange={(e) => setProgressionId(e.target.value)}
               className="mt-1 w-full bg-black/50 border border-green-500/20 rounded-lg p-3 text-xs text-white cyber-mono focus:outline-none focus:border-green-400/60"
             >
-              {PROGRESSIONS.filter((p) => p.mode === mode).map((p) => (
+              {ALL_PROGRESSIONS.filter((p) => p.mode === mode).map((p) => (
                 <option key={p.id} value={p.id}>{p.label}</option>
               ))}
             </select>
@@ -325,6 +365,113 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
         </div>
       </div>
 
+      {/* Song / Fake-Book */}
+      <div className="cyber-card p-5">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="hud-label text-[10px] font-black">📚 Song-Bibliothek (Fake-Book)</h3>
+          {songId && (
+            <span className="cyber-mono text-[9px] neon-green uppercase tracking-widest">
+              Ausgewählt: {SONG_CATALOG.find((s) => s.id === songId)?.title}
+            </span>
+          )}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {SONG_CATALOG.map((song) => (
+            <button
+              key={song.id}
+              onClick={() => applySong(song)}
+              className={`text-left p-3 rounded-lg border transition-all ${
+                songId === song.id
+                  ? 'border-green-400/60 bg-green-500/10'
+                  : 'border-slate-700/60 hover:border-green-400/40'
+              }`}
+            >
+              <span className="font-black text-white text-sm block">{song.title}</span>
+              <span className="cyber-mono text-[9px] text-slate-400 block mt-1">
+                {song.genre} · {'★'.repeat(song.difficulty)}{'☆'.repeat(3 - song.difficulty)}
+              </span>
+              <span className="text-[9px] text-slate-500 block mt-1">{song.description}</span>
+            </button>
+          ))}
+        </div>
+        <p className="cyber-mono text-[9px] text-slate-500 mt-3">
+          Klicke einen Song, um Tonart, Modus und Progression zu setzen — der Loop spielt die vollständige Struktur.
+        </p>
+      </div>
+
+      {/* Guide-tone routing */}
+      <div className="cyber-card p-5">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="hud-label text-[10px] font-black">🧭 Guide-Tone-Routing</h3>
+          <button
+            onClick={() => setGuideOn((g) => !g)}
+            className={`cyber-btn px-3 py-1.5 text-[9px] font-black uppercase tracking-widest ${guideOn ? 'cyber-btn-green' : ''}`}
+          >
+            {guideOn ? '● AN' : '○ AUS'}
+          </button>
+        </div>
+        {guideOn && effectiveGuide ? (
+          <div className="border border-cyan-500/25 bg-cyan-500/5 rounded-lg p-4">
+            <div className="flex items-center gap-4">
+              <div className="text-5xl font-black cyber-display neon-cyan">{effectiveGuide.noteName}</div>
+              <div className="flex-1">
+                <div className="cyber-mono text-[10px] text-cyan-200 uppercase tracking-widest">
+                  Ziel-Leitton ({effectiveGuide.label}) für nächsten Akkord {nextChord?.degree ?? '—'}
+                </div>
+                <p className="text-[11px] text-slate-300 mt-1">{effectiveGuide.reason}</p>
+              </div>
+            </div>
+            <div className="cyber-mono text-[9px] text-slate-400 mt-3">
+              Spiel beim Wechsel auf diesen Ton — er verbindet den aktuellen Akkord mit dem nächsten.
+            </div>
+          </div>
+        ) : (
+          <p className="text-slate-400 text-sm">Aktiviere Guide-Tone-Routing, um den verbindenden Ton zum nächsten Akkord zu sehen.</p>
+        )}
+      </div>
+
+      {/* Position Lens */}
+      <div className="cyber-card p-5">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="hud-label text-[10px] font-black">🔍 Position-Lens</h3>
+          <span className="cyber-mono text-[9px] text-slate-500">Bund {lensFret}</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={12}
+          value={lensFret}
+          onChange={(e) => setLensFret(Number(e.target.value))}
+          className="w-full accent-cyan-400 mb-3"
+        />
+        {selectedShape && (
+          <div className="flex flex-wrap gap-2">
+            {selectedShape.positions
+              .sort((a, b) => Math.abs(a.fret - lensFret) - Math.abs(b.fret - lensFret))
+              .slice(0, 6)
+              .map((p) => (
+                <span
+                  key={`${p.string}-${p.fret}`}
+                  className={`px-2 py-1 rounded border text-[10px] font-mono ${
+                    p.role === 'root'
+                      ? 'bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-400/40'
+                      : p.role === 'third'
+                        ? 'bg-cyan-500/20 text-cyan-200 border-cyan-400/40'
+                        : p.role === 'seventh'
+                          ? 'bg-amber-500/20 text-amber-200 border-amber-400/40'
+                          : 'bg-emerald-500/20 text-emerald-200 border-emerald-400/40'
+                  }`}
+                >
+                  {p.string + 1}·{p.fret} {pitchClassName(p.pitchClass)} {p.role}
+                </span>
+              ))}
+          </div>
+        )}
+        <p className="cyber-mono text-[9px] text-slate-500 mt-3">
+          Fahre mit dem Faden bis deine Hand läuft — so findest du den griffnahsten Akkord-Ton in deiner Position.
+        </p>
+      </div>
+
       {/* Fretboard using chord+scale notes */}
       <div className="cyber-card p-5">
         <div className="flex justify-between items-center mb-3">
@@ -378,9 +525,18 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
       <div className="cyber-card p-5">
         <div className="flex justify-between items-center mb-4">
           <h3 className="hud-label text-[10px] font-black">📡 Live-Check</h3>
-          <span className={`cyber-mono text-[10px] ${mic.isListening ? 'neon-green' : 'text-slate-500'}`}>
-            {mic.isListening ? '• ONLINE' : '• OFFLINE'}
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSoundOn((s) => !s)}
+              className={`cyber-btn px-2 py-1 text-[9px] font-black uppercase tracking-widest ${soundOn ? 'cyber-btn-amber' : ''}`}
+              title="Auditives Feedback"
+            >
+              {soundOn ? '🔔 TON' : '🔕 STUMM'}
+            </button>
+            <span className={`cyber-mono text-[10px] ${mic.isListening ? 'neon-green' : 'text-slate-500'}`}>
+              {mic.isListening ? '• ONLINE' : '• OFFLINE'}
+            </span>
+          </div>
         </div>
         <div className="flex flex-col md:flex-row gap-4 items-center">
           <div className="text-center min-w-[120px]">

@@ -4,12 +4,17 @@ import { LickTrainer } from './LickTrainer';
 import { ImprovisationCoach } from './ImprovisationCoach';
 import { RhythmJam } from './RhythmJam';
 import { JamCoach } from './JamCoach';
+import { DesignLab } from './DesignLab';
 import { useProgress } from '../core/useProgress';
+import { useTheme } from '../core/useTheme';
 import { LickProgress } from '../core/licks';
 
 export const ImprovisationStudio: React.FC = () => {
   const { player, reset } = useProgress();
-  const [view, setView] = useState<'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam' | 'jam-coach'>('hub');
+  const { current } = useTheme();
+  const [view, setView] = useState<
+    'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam' | 'jam-coach' | 'design-lab'
+  >('hub');
 
   const lickProgress = player.modules.lickTrainer.licks;
   const lickValues: LickProgress[] = Object.values(lickProgress);
@@ -86,6 +91,15 @@ export const ImprovisationStudio: React.FC = () => {
       onClick: () => setView('jam-coach'),
     },
     {
+      id: 'design-lab',
+      title: 'Design-Lab',
+      description: `Interaktive Design-Prototypen wählen — aktuell: ${current.name}.`,
+      icon: '🎨',
+      available: true,
+      progress: 1,
+      onClick: () => setView('design-lab'),
+    },
+    {
       id: 'library',
       title: 'Lick-Bibliothek',
       description: 'Fertige Licks für Blues, Rock, Jazz und Country.',
@@ -110,6 +124,10 @@ export const ImprovisationStudio: React.FC = () => {
 
   if (view === 'jam-coach') {
     return <JamCoach onBack={() => setView('hub')} />;
+  }
+
+  if (view === 'design-lab') {
+    return <DesignLab onBack={() => setView('hub')} />;
   }
 
   return <ModuleHub modules={modules} player={player} onReset={reset} />;
