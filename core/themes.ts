@@ -74,6 +74,24 @@ export const THEMES: ThemeDef[] = [
     colors: { cyan: '#00e5ff', magenta: '#ff007f', amber: '#ffd166', purple: '#7b2ff7', green: '#00ffd5', bg: '#1a0b2e' },
     prototype: { title: 'SUNSET DRIVE', subtitle: 'MIAMI NEON SYSTEM', chord: 'Bmaj7', mode: 'DRIVE' },
   },
+  {
+    id: 'inferno',
+    name: 'Inferno Red',
+    tagline: 'AKIRA MOTOR',
+    description: 'Signal-Rot auf Schwarz mit Orange — aggressiv, heiß, wie das Rot aus dem Film.',
+    font: 'Orbitron',
+    colors: { cyan: '#ff3b3b', magenta: '#ff6a00', amber: '#ffb300', purple: '#ff0047', green: '#ffe259', bg: '#140608' },
+    prototype: { title: 'REDLINE', subtitle: 'KANEDA SIGNAL', chord: 'E7', mode: 'RED RUSH' },
+  },
+  {
+    id: 'aurora',
+    name: 'Aurora Ice',
+    tagline: 'POLAR LIGHT',
+    description: 'Eisblau + Grün auf Kalt-Navy — klar, ruhig, futuristisch-winterlich.',
+    font: 'Rajdhani',
+    colors: { cyan: '#66e0ff', magenta: '#8ab4ff', amber: '#e0e7ff', purple: '#5c7cff', green: '#7dffc0', bg: '#060c1a' },
+    prototype: { title: 'AURORA', subtitle: 'POLAR SYNTH UNIT', chord: 'Cmaj9', mode: 'ICE' },
+  },
 ];
 
 export const DEFAULT_THEME = THEMES[0].id;

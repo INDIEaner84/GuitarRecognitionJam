@@ -110,6 +110,7 @@ export const makeEvent = (
 
 export interface BuiltinLick extends Lick {
   builtin?: boolean;
+  genre?: string;
 }
 
 export const BUILTIN_LICKS: BuiltinLick[] = [
@@ -156,6 +157,104 @@ export const BUILTIN_LICKS: BuiltinLick[] = [
       { id: 'a4', beat: 1.5, durationBeats: 0.5, notes: ['E3'], string: 4, fret: 2 },
       { id: 'a5', beat: 2, durationBeats: 0.5, notes: ['A3'], string: 3, fret: 2 },
       { id: 'a6', beat: 2.5, durationBeats: 1, notes: ['C4'], string: 2, fret: 1 },
+    ],
+  },
+  {
+    id: 'lick-rock-e-riff',
+    title: 'Rock Power Riff',
+    key: 'E minor',
+    description: 'Palm-muted power-chord style riff on the low strings.',
+    genre: 'rock',
+    builtin: true,
+    events: [
+      { id: 'r1', beat: 0, durationBeats: 0.25, notes: ['E2'], string: 6, fret: 0 },
+      { id: 'r2', beat: 0.25, durationBeats: 0.25, notes: ['G2'], string: 6, fret: 3 },
+      { id: 'r3', beat: 0.5, durationBeats: 0.25, notes: ['A2'], string: 5, fret: 0 },
+      { id: 'r4', beat: 0.75, durationBeats: 0.25, notes: ['G2'], string: 6, fret: 3 },
+      { id: 'r5', beat: 1, durationBeats: 0.5, notes: ['E2'], string: 6, fret: 0 },
+      { id: 'r6', beat: 2, durationBeats: 0.5, notes: ['D2'], string: 4, fret: 0 },
+      { id: 'r7', beat: 2.5, durationBeats: 0.25, notes: ['E2'], string: 6, fret: 0 },
+      { id: 'r8', beat: 2.75, durationBeats: 0.25, notes: ['C3'], string: 5, fret: 3 },
+    ],
+  },
+  {
+    id: 'lick-blues-bb',
+    title: 'BB-Style Turnaround',
+    key: 'Bb major',
+    description: 'A classic blues turnaround phrase in ninth position.',
+    genre: 'blues',
+    builtin: true,
+    events: [
+      { id: 'bb1', beat: 0, durationBeats: 0.5, notes: ['F3'], string: 1, fret: 3 },
+      { id: 'bb2', beat: 0.5, durationBeats: 0.5, notes: ['G3'], string: 1, fret: 5 },
+      { id: 'bb3', beat: 1, durationBeats: 0.5, notes: ['F3'], string: 1, fret: 3 },
+      { id: 'bb4', beat: 1.5, durationBeats: 0.5, notes: ['D3'], string: 2, fret: 5 },
+      { id: 'bb5', beat: 2, durationBeats: 0.5, notes: ['Bb2'], string: 3, fret: 0 },
+      { id: 'bb6', beat: 2.5, durationBeats: 1, notes: ['A2'], string: 5, fret: 0 },
+    ],
+  },
+  {
+    id: 'lick-jazz-ii-v',
+    title: 'Jazz ii-V Lick',
+    key: 'C major',
+    description: 'A bebop-flavoured phrase over the ii–V–I progression.',
+    genre: 'jazz',
+    builtin: true,
+    events: [
+      { id: 'j1', beat: 0, durationBeats: 0.5, notes: ['D4'], string: 2, fret: 3 },
+      { id: 'j2', beat: 0.5, durationBeats: 0.5, notes: ['F4'], string: 1, fret: 3 },
+      { id: 'j3', beat: 1, durationBeats: 0.5, notes: ['A4'], string: 1, fret: 7 },
+      { id: 'j4', beat: 1.5, durationBeats: 0.5, notes: ['G4'], string: 1, fret: 5 },
+      { id: 'j5', beat: 2, durationBeats: 0.5, notes: ['E4'], string: 2, fret: 5 },
+      { id: 'j6', beat: 2.5, durationBeats: 1, notes: ['C4'], string: 2, fret: 1 },
+    ],
+  },
+  {
+    id: 'lick-folk-g',
+    title: 'Folk G-Pentatonic',
+    key: 'G major',
+    description: 'Open-voiced folk melody, gentle and singable.',
+    genre: 'folk',
+    builtin: true,
+    events: [
+      { id: 'f1', beat: 0, durationBeats: 0.5, notes: ['D4'], string: 2, fret: 3 },
+      { id: 'f2', beat: 0.5, durationBeats: 0.5, notes: ['B3'], string: 3, fret: 2 },
+      { id: 'f3', beat: 1, durationBeats: 0.5, notes: ['G3'], string: 6, fret: 3 },
+      { id: 'f4', beat: 1.5, durationBeats: 0.5, notes: ['A3'], string: 5, fret: 0 },
+      { id: 'f5', beat: 2, durationBeats: 1, notes: ['G3'], string: 6, fret: 3 },
+      { id: 'f6', beat: 3, durationBeats: 1, notes: ['D4'], string: 2, fret: 3 },
+    ],
+  },
+  {
+    id: 'lick-metal-phrygian',
+    title: 'Metal Phrygian',
+    key: 'E phrygian',
+    description: 'Tension-heavy phrygian run with the low E drone.',
+    genre: 'metal',
+    builtin: true,
+    events: [
+      { id: 'm1', beat: 0, durationBeats: 0.25, notes: ['E2'], string: 6, fret: 0 },
+      { id: 'm2', beat: 0.25, durationBeats: 0.25, notes: ['F2'], string: 6, fret: 1 },
+      { id: 'm3', beat: 0.5, durationBeats: 0.25, notes: ['G2'], string: 6, fret: 3 },
+      { id: 'm4', beat: 0.75, durationBeats: 0.25, notes: ['F2'], string: 6, fret: 1 },
+      { id: 'm5', beat: 1, durationBeats: 0.5, notes: ['E2'], string: 6, fret: 0 },
+      { id: 'm6', beat: 2, durationBeats: 0.5, notes: ['B2'], string: 5, fret: 2 },
+      { id: 'm7', beat: 2.5, durationBeats: 0.25, notes: ['C3'], string: 5, fret: 3 },
+      { id: 'm8', beat: 2.75, durationBeats: 0.25, notes: ['B2'], string: 5, fret: 2 },
+    ],
+  },
+  {
+    id: 'lick-reggae-offbeat',
+    title: 'Reggae Offbeat',
+    key: 'A minor',
+    description: 'Off-beat skank phrase between chord stabs.',
+    genre: 'reggae',
+    builtin: true,
+    events: [
+      { id: 're1', beat: 0, durationBeats: 0.5, notes: ['A3'], string: 3, fret: 2 },
+      { id: 're2', beat: 1, durationBeats: 0.5, notes: ['C4'], string: 2, fret: 1 },
+      { id: 're3', beat: 2, durationBeats: 0.5, notes: ['E3'], string: 4, fret: 2 },
+      { id: 're4', beat: 3, durationBeats: 0.5, notes: ['A3'], string: 3, fret: 2 },
     ],
   },
 ];

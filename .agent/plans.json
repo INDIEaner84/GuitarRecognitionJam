@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31T17:06:26.871Z",
+  "updatedAt": "2026-08-31T18:15:04.456Z",
   "repo": "GuitarRecognitionJam",
   "coordination": {
     "singleSourceOfTruth": ".agent/plans.json",
@@ -303,6 +303,32 @@
       "notes": [
         "Status changed to done at 2026-08-31T17:06:26.871Z.",
         "Theorie-Quiz, Gehörbildung und direkter Theme-Switcher umgesetzt. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-012",
+      "agent": "ui-craftsman",
+      "title": "Lick-Bibliothek + direkt interaktive Design-Protypen",
+      "goal": "Lick-Bibliothek mit Genre-Filter, Anhören und Sprung in den Lick-Trainer; DesignLab-Karten und neue Themes direkt per Klick aktivierbar.",
+      "area": "licks,library,design",
+      "files": [
+        "core/licks.ts",
+        "core/library.ts",
+        "modules/LickLibrary.tsx",
+        "modules/LickTrainer.tsx",
+        "modules/ImprovisationStudio.tsx",
+        "modules/DesignLab.tsx",
+        "core/themes.ts",
+        "index.html"
+      ],
+      "status": "done",
+      "createdAt": "2026-08-31T18:13:35.733Z",
+      "updatedAt": "2026-08-31T18:15:04.456Z",
+      "dependsOn": [],
+      "notes": [
+        "Uncommitted, tsc + build gruen.",
+        "Status changed to done at 2026-08-31T18:15:04.456Z.",
+        "Lick-Bibliothek mit Genre-Filter, Vorschau + Sprung in den Lick-Trainer; DesignLab-Karten und 2 neue Themes direkt per Klick aktivierbar. tsc + build gruen."
       ]
     }
   ]

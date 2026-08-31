@@ -9,7 +9,7 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-08-31T17:06:26.871Z
+Aktualisiert: 2026-08-31T18:15:04.456Z
 
 ## Agents
 
@@ -17,7 +17,7 @@ Aktualisiert: 2026-08-31T17:06:26.871Z
 | --- | --- | --- | --- |
 | `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/6 |
 | `audio-engineer` | Pitch detection, autocorrelation, Tone.js playback, audio routing | available | 0/1 |
-| `ui-craftsman` | React components, layout, styling, accessibility | available | 0/4 |
+| `ui-craftsman` | React components, layout, styling, accessibility | available | 0/5 |
 | `ai-context-engineer` | Gemini service, prompts, response schemas, analysis types | available | 0/0 |
 
 ## Aktive Vorhaben
@@ -167,6 +167,20 @@ _Keine aktiven Vorhaben._
 **Notizen:**
 - Status changed to done at 2026-08-31T17:06:26.871Z.
 - Theorie-Quiz, Gehörbildung und direkter Theme-Switcher umgesetzt. tsc + build gruen.
+
+### PLAN-012 — Lick-Bibliothek + direkt interaktive Design-Protypen
+
+- **Agent:** `ui-craftsman`
+- **Status:** 🟢 done
+- **Bereich:** licks,library,design
+- **Betroffene Dateien:** core/licks.ts, core/library.ts, modules/LickLibrary.tsx, modules/LickTrainer.tsx, modules/ImprovisationStudio.tsx, modules/DesignLab.tsx, core/themes.ts, index.html
+
+**Ziel:** Lick-Bibliothek mit Genre-Filter, Anhören und Sprung in den Lick-Trainer; DesignLab-Karten und neue Themes direkt per Klick aktivierbar.
+
+**Notizen:**
+- Uncommitted, tsc + build gruen.
+- Status changed to done at 2026-08-31T18:15:04.456Z.
+- Lick-Bibliothek mit Genre-Filter, Vorschau + Sprung in den Lick-Trainer; DesignLab-Karten und 2 neue Themes direkt per Klick aktivierbar. tsc + build gruen.
 
 
 ## Workflow

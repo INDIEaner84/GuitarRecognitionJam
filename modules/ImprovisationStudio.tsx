@@ -7,16 +7,18 @@ import { JamCoach } from './JamCoach';
 import { DesignLab } from './DesignLab';
 import { TheoryQuiz } from './TheoryQuiz';
 import { EarTraining } from './EarTraining';
+import { LickLibrary } from './LickLibrary';
 import { useProgress } from '../core/useProgress';
 import { useTheme } from '../core/useTheme';
-import { LickProgress } from '../core/licks';
+import { LickProgress, BUILTIN_LICKS } from '../core/licks';
 
 export const ImprovisationStudio: React.FC = () => {
   const { player, reset } = useProgress();
   const { current } = useTheme();
   const [view, setView] = useState<
-    'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam' | 'jam-coach' | 'design-lab' | 'theory-quiz' | 'ear-training'
+    'hub' | 'lick-trainer' | 'coach' | 'rhythm-jam' | 'jam-coach' | 'design-lab' | 'theory-quiz' | 'ear-training' | 'lick-library'
   >('hub');
+  const [trainerLickId, setTrainerLickId] = useState<string | null>(null);
 
   const lickProgress = player.modules.lickTrainer.licks;
   const lickValues: LickProgress[] = Object.values(lickProgress);
@@ -122,16 +124,28 @@ export const ImprovisationStudio: React.FC = () => {
     {
       id: 'library',
       title: 'Lick-Bibliothek',
-      description: 'Fertige Licks für Blues, Rock, Jazz und Country.',
+      description: `Fertige Licks für Blues, Rock, Jazz, Folk, Metal und Reggae — ${BUILTIN_LICKS.length} Stück mit Vorschau.`,
       icon: '📚',
-      available: false,
-      progress: lickValues.length > 0 ? 1 : 0.1,
-      onClick: () => undefined,
+      available: true,
+      progress: Math.min(1, (Object.keys(player.modules.lickTrainer.licks).length || 0) / Math.max(BUILTIN_LICKS.length, 1)),
+      onClick: () => setView('lick-library'),
     },
   ];
 
   if (view === 'lick-trainer') {
-    return <LickTrainer onBack={() => setView('hub')} />;
+    return <LickTrainer onBack={() => setView('hub')} initialLickId={trainerLickId ?? undefined} />;
+  }
+
+  if (view === 'lick-library') {
+    return (
+      <LickLibrary
+        onBack={() => setView('hub')}
+        onOpenTrainer={(lickId) => {
+          setTrainerLickId(lickId);
+          setView('lick-trainer');
+        }}
+      />
+    );
   }
 
   if (view === 'coach') {

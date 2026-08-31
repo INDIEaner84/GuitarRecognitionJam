@@ -21,6 +21,7 @@ import { parsePdfFile } from '../core/pdf';
 
 interface LickTrainerProps {
   onBack: () => void;
+  initialLickId?: string;
 }
 
 type Phase = 'setup' | 'editing' | 'review' | 'practice' | 'done';
@@ -49,7 +50,7 @@ const feedbackLabel: Record<RunResult['feedback'], string> = {
   'on-time-note-only': '🕒 Note egal — Timing passt',
 };
 
-export const LickTrainer: React.FC<LickTrainerProps> = ({ onBack }) => {
+export const LickTrainer: React.FC<LickTrainerProps> = ({ onBack, initialLickId }) => {
   const { player: progress, grant, reset } = useProgress();
   const mic = usePitchStream();
 
@@ -95,6 +96,11 @@ export const LickTrainer: React.FC<LickTrainerProps> = ({ onBack }) => {
     setHistory([]);
     setRunCount(0);
   }, [lickId]);
+
+  useEffect(() => {
+    if (initialLickId && initialLickId !== lickId) setLickId(initialLickId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialLickId]);
 
   const player = () => {
     if (!playerRef.current) playerRef.current = new LickPlayer();

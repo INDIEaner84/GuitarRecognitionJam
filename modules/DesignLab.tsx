@@ -47,6 +47,8 @@ export const DesignLab: React.FC<DesignLabProps> = ({ onBack }) => {
             theme={theme}
             active={theme.id === themeId}
             onActivate={() => setThemeId(theme.id)}
+            allThemes={all}
+            onSelectTheme={setThemeId}
           />
         ))}
       </div>
@@ -58,11 +60,17 @@ const ThemePrototypeCard: React.FC<{
   theme: ThemeDef;
   active: boolean;
   onActivate: () => void;
-}> = ({ theme, active, onActivate }) => {
+  allThemes: ThemeDef[];
+  onSelectTheme: (id: string) => void;
+}> = ({ theme, active, onActivate, allThemes, onSelectTheme }) => {
   const c = theme.colors;
   return (
     <div
-      className={`cyber-card relative p-5 transition-all ${
+      onClick={onActivate}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') onActivate(); }}
+      className={`cyber-card relative p-5 transition-all cursor-pointer ${
         active ? 'ring-2 ring-white/40 shadow-[0_0_28px_rgba(0,240,255,0.25)]' : 'hover:scale-[1.02]'
       }`}
       style={{ background: `linear-gradient(160deg, ${c.bg} 0%, #0b071a 100%)` }}
@@ -107,14 +115,26 @@ const ThemePrototypeCard: React.FC<{
         </div>
       </div>
 
+      <div className="flex gap-2 mt-3">
+        {allThemes.map((t) => (
+          <button
+            key={t.id}
+            onClick={(e) => { e.stopPropagation(); onSelectTheme(t.id); }}
+            className={`w-5 h-5 rounded-full ring-2 transition-all ${theme.id === t.id ? 'ring-white scale-110' : 'ring-transparent opacity-60 hover:opacity-100'}`}
+            style={{ background: `linear-gradient(135deg, ${t.colors.cyan}, ${t.colors.magenta})` }}
+            title={t.name}
+          />
+        ))}
+      </div>
+
       <button
         onClick={onActivate}
-        className={`cyber-btn w-full px-4 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
+        className={`cyber-btn w-full mt-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest transition-all ${
           active ? 'cyber-btn-green' : ''
         }`}
         style={!active ? { borderColor: `${c.cyan}88`, color: c.cyan } : undefined}
       >
-        {active ? '✓ Aktiviert' : '→ Design aktivieren'}
+        {active ? '✓ Aktiviert' : '→ Direkt aktivieren'}
       </button>
     </div>
   );
