@@ -9,20 +9,22 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-08-31T18:15:04.456Z
+Aktualisiert: 2026-09-02T11:54:15.415Z
 
 ## Agents
 
 | ID | Rolle | Status | Pläne aktiv/gesamt |
 | --- | --- | --- | --- |
-| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/6 |
+| `harmonic-scout-core` | Repository maintainer / coordinator | active | 1/7 |
 | `audio-engineer` | Pitch detection, autocorrelation, Tone.js playback, audio routing | available | 0/1 |
 | `ui-craftsman` | React components, layout, styling, accessibility | available | 0/5 |
 | `ai-context-engineer` | Gemini service, prompts, response schemas, analysis types | available | 0/0 |
 
 ## Aktive Vorhaben
 
-_Keine aktiven Vorhaben._
+| Plan | Agent | Status | Bereich | Berührte Dateien |
+| --- | --- | --- | --- | --- |
+| `PLAN-013` | `harmonic-scout-core` | 🔵 in-progress | docs,release-ops | docs/github-setup.md, package.json, package-lock.json, metadata.json, .agent/plans.json, docs/agent-coordination.md |
 
 ## Alle Vorhaben
 
@@ -181,6 +183,15 @@ _Keine aktiven Vorhaben._
 - Uncommitted, tsc + build gruen.
 - Status changed to done at 2026-08-31T18:15:04.456Z.
 - Lick-Bibliothek mit Genre-Filter, Vorschau + Sprung in den Lick-Trainer; DesignLab-Karten und 2 neue Themes direkt per Klick aktivierbar. tsc + build gruen.
+
+### PLAN-013 — GitHub setup: repo metadata + v1.0.0 release
+
+- **Agent:** `harmonic-scout-core`
+- **Status:** 🔵 in-progress
+- **Bereich:** docs,release-ops
+- **Betroffene Dateien:** docs/github-setup.md, package.json, package-lock.json, metadata.json, .agent/plans.json, docs/agent-coordination.md
+
+**Ziel:** Create docs/github-setup.md checklist, bump version to 1.0.0, set GitHub description+topics, push cleanup commit, cut v1.0.0 release.
 
 
 ## Workflow
