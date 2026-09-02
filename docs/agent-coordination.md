@@ -9,13 +9,13 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-08-31T18:15:04.456Z
+Aktualisiert: 2026-09-02T13:21:27.098Z
 
 ## Agents
 
 | ID | Rolle | Status | Pläne aktiv/gesamt |
 | --- | --- | --- | --- |
-| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/6 |
+| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/7 |
 | `audio-engineer` | Pitch detection, autocorrelation, Tone.js playback, audio routing | available | 0/1 |
 | `ui-craftsman` | React components, layout, styling, accessibility | available | 0/5 |
 | `ai-context-engineer` | Gemini service, prompts, response schemas, analysis types | available | 0/0 |
@@ -181,6 +181,19 @@ _Keine aktiven Vorhaben._
 - Uncommitted, tsc + build gruen.
 - Status changed to done at 2026-08-31T18:15:04.456Z.
 - Lick-Bibliothek mit Genre-Filter, Vorschau + Sprung in den Lick-Trainer; DesignLab-Karten und 2 neue Themes direkt per Klick aktivierbar. tsc + build gruen.
+
+### PLAN-013 — Fundament: Typen, Tests, Pitch-Detektor, Bundle
+
+- **Agent:** `harmonic-scout-core`
+- **Status:** 🟢 done
+- **Bereich:** core,tests,build,docs
+- **Betroffene Dateien:** App.tsx, index.tsx, index.html, tsconfig.json, package.json, vite.config.ts, core/, components/ErrorBoundary.tsx, components/ScaleVisualizer.tsx, components/SpeedTrainer.tsx, modules/, services/geminiService.ts, tests/, docs/next-steps.md, README.md, .github/workflows/ci.yml
+
+**Ziel:** Reale Typsicherheit (@types/react + strict), Unit-Tests fuer core/, NSDF-Pitch-Detektor statt fehlerhafter Oktav-Spruenge, Bundle-Splitting, CI.
+
+**Notizen:**
+- Status changed to done at 2026-09-02T13:21:27.098Z.
+- Umgesetzt: @types/react + strict (0 Fehler), 92 Unit-Tests (Vitest), NSDF-Pitch-Detektor (Oktav-Bug behoben), Rhythm-Jam-Metronom-Callback repariert, Oktav-Toleranz wirkt jetzt, Quiz/Gehoerbildung-Optionen immer loesbar, ErrorBoundary, Bundle 889kB -> 241kB initial, pdfjs-Worker lokal, CI-Workflow. tsc + tests + build gruen.
 
 
 ## Workflow

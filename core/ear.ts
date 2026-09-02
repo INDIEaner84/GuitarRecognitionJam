@@ -2,8 +2,6 @@
  * Ear-training helpers: play a note/interval/chord with Tone and ask the
  * player to identify it. Pure logic — playback uses the shared LickPlayer.
  */
-import { pitchClassName } from './theory';
-
 export interface EarQuestion<K = 'note' | 'interval' | 'chord'> {
   kind: K;
   prompt: string;
@@ -27,13 +25,19 @@ const shuffle = <T,>(arr: T[]): T[] => {
 
 const noteName = (pc: number, octave = 4) => `${NOTES[pc]}${octave}`;
 
+/** Baut eindeutige Antwortoptionen — die Lösung ist immer enthalten. */
+const optionsFor = (correct: string, wrong: string[], count = 4): string[] => {
+  const pool = shuffle(Array.from(new Set(wrong.filter((w) => w !== correct))));
+  return shuffle([correct, ...pool.slice(0, count - 1)]);
+};
+
 export const buildNoteQuestion = (difficulty = 1): EarQuestion<'note'> => {
   const pc = Math.floor(Math.random() * 12);
   const wrong = NOTES.filter((n) => n !== NOTES[pc]).slice(0, 12);
   return {
     kind: 'note',
     prompt: 'Welche Note wurde gespielt?',
-    options: shuffle([NOTES[pc], ...wrong]).slice(0, 4),
+    options: optionsFor(NOTES[pc], wrong),
     correct: NOTES[pc],
     pitchClasses: [pc],
     noteNames: [noteName(pc)],
@@ -57,7 +61,7 @@ export const buildIntervalQuestion = (difficulty = 1): EarQuestion<'interval'> =
   return {
     kind: 'interval',
     prompt: 'Wie groß ist das Intervall?',
-    options: shuffle([sel.name, ...wrong]).slice(0, 4),
+    options: optionsFor(sel.name, wrong),
     correct: sel.name,
     pitchClasses: [root, (root + sel.semis) % 12],
     noteNames: [noteName(root), noteName((root + sel.semis) % 12)],
@@ -80,7 +84,7 @@ export const buildChordQuestion = (difficulty = 1): EarQuestion<'chord'> => {
   return {
     kind: 'chord',
     prompt: 'Welcher Akkord klingt? (begleitet vom Grundton)',
-    options: shuffle([kind, ...wrong]).slice(0, 4),
+    options: optionsFor(kind, wrong),
     correct: kind,
     pitchClasses: pcs,
     noteNames: pcs.map((pc) => noteName(pc)),

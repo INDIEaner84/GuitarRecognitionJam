@@ -83,6 +83,17 @@ export const noteClass = (note: string): string =>
 export const samePitch = (a: string, b: string): boolean =>
   noteClass(a) === noteClass(b);
 
+/**
+ * Strenger Vergleich: haben beide Noten eine Oktavangabe, müssen die Oktaven
+ * übereinstimmen. Damit wirkt die „Oktav-Toleranz aus“-Option im Trainer.
+ */
+export const samePitchStrict = (a: string, b: string): boolean => {
+  const octaveA = /\d+$/.exec(a)?.[0];
+  const octaveB = /\d+$/.exec(b)?.[0];
+  if (octaveA && octaveB && octaveA !== octaveB) return false;
+  return noteClass(a) === noteClass(b);
+};
+
 export const eventById = (lick: Lick, id: string): LickEvent | undefined =>
   lick.events.find((e) => e.id === id);
 

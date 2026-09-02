@@ -16,7 +16,7 @@ const COMPLEXITY_CONFIG = {
 };
 
 export const SpeedTrainer: React.FC<SpeedTrainerProps> = ({ activeNote }) => {
-  const [isActive, setIsActive] = useState(false);
+  const [, setIsActive] = useState(false);
   const [isMetronomeAudioEnabled, setIsMetronomeAudioEnabled] = useState(false);
   const [trainingState, setTrainingState] = useState<'idle' | 'learning' | 'locked' | 'training'>('idle');
   const [complexity, setComplexity] = useState<ComplexityMode>('balanced');
@@ -30,7 +30,7 @@ export const SpeedTrainer: React.FC<SpeedTrainerProps> = ({ activeNote }) => {
   const [startBpm, setStartBpm] = useState(80);
   const [bpm, setBpm] = useState(80);
   const [targetBpm, setTargetBpm] = useState(140);
-  const [increment, setIncrement] = useState(5);
+  const [increment] = useState(5);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [currentBeat, setCurrentBeat] = useState(0);

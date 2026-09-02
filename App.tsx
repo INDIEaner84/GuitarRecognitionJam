@@ -1,77 +1,26 @@
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
 import { Visualizer } from './components/Visualizer';
 import { SuggestionCard, Tablature, PlayRiffButton, PlayProgressionButton } from './components/SuggestionCard';
 import { ScaleVisualizer, ModeVisualizer, FretboardMini } from './components/ScaleVisualizer';
 import { SpeedTrainer } from './components/SpeedTrainer';
-import { ImprovisationStudio } from './modules/ImprovisationStudio';
+// Das Studio (Fretboards, Coach, Jam, Tone.js) wird erst beim Öffnen geladen.
+const ImprovisationStudio = lazy(() =>
+  import('./modules/ImprovisationStudio').then((m) => ({ default: m.ImprovisationStudio })),
+);
 import { useTheme } from './core/useTheme';
 import { THEMES } from './core/themes';
-import { getNoteFromFrequency, identifyChord } from './constants';
-import { analyzeMusicalContext } from './services/geminiService';
+import { identifyChord } from './constants';
+import { samplePitch } from './core/audio';
 import { NoteData, ScaleAnalysis } from './types';
 
-// Zero-allocation buffer for autocorrelation
-const correlationBuffer = new Float32Array(2048);
-
 /**
- * Optimized Autocorrelation with Parabolic Interpolation for higher accuracy
- * and zero allocations in the hot loop.
+ * Der Gemini-Service wird erst beim Analysieren geladen — so bleibt das SDK
+ * aus dem Haupt-Bundle draußen und die App startet schlanker.
  */
-const autoCorrelate = (buf: Float32Array, sampleRate: number): number => {
-  const SIZE = buf.length;
-  
-  // Calculate Root Mean Square to detect silence
-  let rms = 0;
-  for (let i = 0; i < SIZE; i++) {
-    rms += buf[i] * buf[i];
-  }
-  rms = Math.sqrt(rms / SIZE);
-  if (rms < 0.005) return -1; // Extremely low threshold for higher sensitivity
-
-  // Clear correlation buffer
-  correlationBuffer.fill(0);
-
-  // Compute Autocorrelation
-  const maxOffset = SIZE / 2; 
-  for (let offset = 0; offset < maxOffset; offset++) {
-    let sum = 0;
-    for (let i = 0; i < maxOffset; i++) {
-      sum += buf[i] * buf[i + offset];
-    }
-    correlationBuffer[offset] = sum;
-  }
-
-  // Find the first dip (to avoid the zero-lag peak)
-  let d = 0;
-  while (correlationBuffer[d] > correlationBuffer[d + 1] && d < maxOffset) d++;
-  
-  // Find the highest peak after the first dip
-  let maxval = -1;
-  let maxpos = -1;
-  for (let i = d; i < maxOffset; i++) {
-    if (correlationBuffer[i] > maxval) {
-      maxval = correlationBuffer[i];
-      maxpos = i;
-    }
-  }
-
-  if (maxpos === -1 || maxpos === 0) return -1;
-
-  // Parabolic interpolation for sub-bin precision frequency detection
-  let finalPos = maxpos;
-  if (maxpos > 0 && maxpos < maxOffset - 1) {
-    const x0 = correlationBuffer[maxpos - 1];
-    const x1 = correlationBuffer[maxpos];
-    const x2 = correlationBuffer[maxpos + 1];
-    const a = (x0 + x2 - 2 * x1) / 2;
-    const b = (x2 - x0) / 2;
-    if (a !== 0) {
-      finalPos = maxpos - b / (2 * a);
-    }
-  }
-
-  return sampleRate / finalPos;
+const analyzeNotes = async (notes: string[]): Promise<ScaleAnalysis> => {
+  const { analyzeMusicalContext } = await import('./services/geminiService');
+  return analyzeMusicalContext(notes);
 };
 
 const App: React.FC = () => {
@@ -84,6 +33,8 @@ const App: React.FC = () => {
   const [analysis, setAnalysis] = useState<ScaleAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isLiveUpdating, setIsLiveUpdating] = useState(false);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -115,8 +66,9 @@ const App: React.FC = () => {
       if (isAnalyzing || isLiveUpdating) return;
       setIsLiveUpdating(true);
       try {
-        const result = await analyzeMusicalContext(Array.from(detectedNotes));
+        const result = await analyzeNotes(Array.from(detectedNotes));
         setAnalysis(result);
+        setAnalysisError(null);
       } catch (err) {
         console.error("Background analysis failed:", err);
       } finally {
@@ -162,7 +114,10 @@ const App: React.FC = () => {
       detectPitch(analyserNode, audioCtx.sampleRate);
     } catch (err) {
       console.error("Failed to start listening:", err);
-      alert("Microphone access is required to use this application.");
+      setMicError(
+        `Mikrofon nicht verfügbar: ${(err as Error)?.message ?? 'Zugriff verweigert'}. Bitte Audio-Zugriff erlauben.`,
+      );
+      setIsListening(false);
     }
   };
 
@@ -199,11 +154,13 @@ const App: React.FC = () => {
       if (!node) return;
       
       node.getFloatTimeDomainData(buffer);
-      const freq = autoCorrelate(buffer, sampleRate);
-      
-      if (freq !== -1 && freq > 20 && freq < 4000) {
-        const { name, octave } = getNoteFromFrequency(freq);
-        
+      const next = samplePitch(buffer, sampleRate);
+
+      if (next) {
+        const name = next.noteName;
+        const octave = next.octave;
+        const freq = next.frequency;
+
         setCurrentNote(prev => {
           if (prev && prev.note === `${name}${octave}` && Math.abs(prev.frequency - freq) < 1) {
             return prev;
@@ -231,10 +188,13 @@ const App: React.FC = () => {
   const runAnalysis = async () => {
     if (detectedNotes.size < 2) return;
     setIsAnalyzing(true);
+    setAnalysisError(null);
     try {
-      const result = await analyzeMusicalContext(Array.from(detectedNotes));
+      const result = await analyzeNotes(Array.from(detectedNotes));
       setAnalysis(result);
     } catch (err) {
+      const message = (err as Error)?.message ?? 'Analyse fehlgeschlagen.';
+      setAnalysisError(message);
       console.error("Manual analysis failed:", err);
     } finally {
       setIsAnalyzing(false);
@@ -291,7 +251,12 @@ const App: React.FC = () => {
             ))}
           </div>
           <button 
-            onClick={() => { setDetectedNotes(new Set()); setAnalysis(null); }} 
+            onClick={() => {
+              setDetectedNotes(new Set());
+              setAnalysis(null);
+              setMicError(null);
+              setAnalysisError(null);
+            }} 
             className="cyber-btn px-4 py-2 text-xs font-bold rounded-md transition-all uppercase tracking-widest text-slate-400 hover:text-white"
           >
             Reset
@@ -316,9 +281,46 @@ const App: React.FC = () => {
         </div>
       </header>
 
+      {(micError || analysisError) && (
+        <div className="max-w-6xl mx-auto mb-6 space-y-2">
+          {micError && (
+            <div className="flex items-start justify-between gap-3 px-4 py-3 rounded-xl border border-rose-500/40 bg-rose-500/10 text-[11px] text-rose-200">
+              <span>🎙️ {micError}</span>
+              <button
+                onClick={() => setMicError(null)}
+                className="font-black text-rose-300/70 hover:text-rose-100"
+                aria-label="Mikrofon-Fehler schließen"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+          {analysisError && (
+            <div className="flex items-start justify-between gap-3 px-4 py-3 rounded-xl border border-amber-500/40 bg-amber-500/10 text-[11px] text-amber-200">
+              <span>⚠️ {analysisError}</span>
+              <button
+                onClick={() => setAnalysisError(null)}
+                className="font-black text-amber-300/70 hover:text-amber-100"
+                aria-label="Analyse-Fehler schließen"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {activeTab === 'studio' ? (
         <main className="max-w-6xl mx-auto">
-          <ImprovisationStudio />
+          <Suspense
+            fallback={
+              <div className="hud-label text-[10px] font-black uppercase tracking-widest text-slate-500 py-16 text-center">
+                Studio wird geladen…
+              </div>
+            }
+          >
+            <ImprovisationStudio />
+          </Suspense>
         </main>
       ) : (
       <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">

@@ -5,12 +5,11 @@ import { buildChordShape, allPositionsForPitch } from '../core/chordShapes';
 import { usePitchStream } from '../core/usePitchStream';
 import { useProgress } from '../core/useProgress';
 import { LickPlayer } from '../core/playback';
-import { pitchClassName, scaleNames } from '../core/theory';
+import { pitchClassName } from '../core/theory';
 import {
   JamMode,
   PROGRESSIONS,
   ProgressionDef,
-  ProgressionStep,
   ChordInKey,
   GuideTone,
   classifyNote,
@@ -23,8 +22,6 @@ import {
 } from '../core/harmony';
 import { SONG_CATALOG, EXTRA_PROGRESSIONS, SongPreset } from '../core/songs';
 import { playFeedback } from '../core/feedbackSound';
-import { sectionStarsForStreak } from '../core/progress';
-import { useTheme } from '../core/useTheme';
 
 const ALL_PROGRESSIONS: ProgressionDef[] = [...PROGRESSIONS, ...EXTRA_PROGRESSIONS];
 
@@ -42,10 +39,9 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
   const [mode, setMode] = useState<JamMode>('major');
   const [progressionId, setProgressionId] = useState('pop-i-vi-iv-v');
   const [selectedStep, setSelectedStep] = useState(0);
-  const [bpm, setBpm] = useState(TEMPO.startBpm);
   const [chordBpm, setChordBpm] = useState(TEMPO.startBpm);
   const [isLooping, setIsLooping] = useState(false);
-  const [loopTick, setLoopTick] = useState(0);
+  const [, setLoopTick] = useState(0);
   const [songId, setSongId] = useState('');
   const [guideOn, setGuideOn] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
@@ -142,7 +138,7 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
     }
     setIsLooping(true);
     if (!playerRef.current) playerRef.current = new LickPlayer();
-    const lick = buildRhythmLick(keyIndex, mode, progression, chordBpm);
+    const lick = buildRhythmLick(keyIndex, mode, progression);
     await playerRef.current.play(lick, chordBpm, {
       onEventStart: (event) => {
         const idx = Number(event.id.replace('chord-', ''));
@@ -179,15 +175,6 @@ export const JamCoach: React.FC<JamCoachProps> = ({ onBack }) => {
   // Guide-tone "routing" help while the loop is playing (even without mic).
   const nextChord = guideOn ? chords[(selectedStep + 1) % chords.length] : null;
   const effectiveGuide = nextGuide ?? (nextChord ? guideToneForChord(nextChord) : null);
-
-  const lensForChord = selectedShape?.positions
-    .filter((p) => Math.abs(p.fret - lensFret) <= 2)
-    .sort((a, b) => Math.abs(a.fret - lensFret) - Math.abs(b.fret - lensFret)) ?? [];
-
-  const stopLoop = async () => {
-    await playerRef.current?.stop();
-    setIsLooping(false);
-  };
 
   useEffect(
     () => () => {

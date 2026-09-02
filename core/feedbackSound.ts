@@ -41,6 +41,7 @@ export const playFeedback = async (kind: keyof typeof FREQS, mute = false) => {
         envelope: { attack: 0.003, decay: 0.08, sustain: 0.2, release: 0.3 },
       });
     }
+    synth.volume.value = VOL[kind] ?? -12;
     synth.triggerAttackRelease(FREQS[kind] ?? 'C4', '16n', Tone.now());
   } catch {
     /* no-op */

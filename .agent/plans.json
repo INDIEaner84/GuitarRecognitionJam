@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31T18:15:04.456Z",
+  "updatedAt": "2026-09-02T13:21:27.098Z",
   "repo": "GuitarRecognitionJam",
   "coordination": {
     "singleSourceOfTruth": ".agent/plans.json",
@@ -329,6 +329,39 @@
         "Uncommitted, tsc + build gruen.",
         "Status changed to done at 2026-08-31T18:15:04.456Z.",
         "Lick-Bibliothek mit Genre-Filter, Vorschau + Sprung in den Lick-Trainer; DesignLab-Karten und 2 neue Themes direkt per Klick aktivierbar. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-013",
+      "agent": "harmonic-scout-core",
+      "title": "Fundament: Typen, Tests, Pitch-Detektor, Bundle",
+      "goal": "Reale Typsicherheit (@types/react + strict), Unit-Tests fuer core/, NSDF-Pitch-Detektor statt fehlerhafter Oktav-Spruenge, Bundle-Splitting, CI.",
+      "area": "core,tests,build,docs",
+      "files": [
+        "App.tsx",
+        "index.tsx",
+        "index.html",
+        "tsconfig.json",
+        "package.json",
+        "vite.config.ts",
+        "core/",
+        "components/ErrorBoundary.tsx",
+        "components/ScaleVisualizer.tsx",
+        "components/SpeedTrainer.tsx",
+        "modules/",
+        "services/geminiService.ts",
+        "tests/",
+        "docs/next-steps.md",
+        "README.md",
+        ".github/workflows/ci.yml"
+      ],
+      "status": "done",
+      "createdAt": "2026-09-02T13:21:19.949Z",
+      "updatedAt": "2026-09-02T13:21:27.098Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-09-02T13:21:27.098Z.",
+        "Umgesetzt: @types/react + strict (0 Fehler), 92 Unit-Tests (Vitest), NSDF-Pitch-Detektor (Oktav-Bug behoben), Rhythm-Jam-Metronom-Callback repariert, Oktav-Toleranz wirkt jetzt, Quiz/Gehoerbildung-Optionen immer loesbar, ErrorBoundary, Bundle 889kB -> 241kB initial, pdfjs-Worker lokal, CI-Workflow. tsc + tests + build gruen."
       ]
     }
   ]

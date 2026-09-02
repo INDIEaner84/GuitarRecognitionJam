@@ -16,7 +16,6 @@ import { usePitchStream } from '../core/usePitchStream';
 import { useProgress } from '../core/useProgress';
 import { matchPlayedEvent, describeGating } from '../core/match';
 import { lickStarsForBpm } from '../core/progress';
-import { normalizeNoteName } from '../core/licks';
 import { parsePdfFile } from '../core/pdf';
 
 interface LickTrainerProps {
@@ -51,7 +50,7 @@ const feedbackLabel: Record<RunResult['feedback'], string> = {
 };
 
 export const LickTrainer: React.FC<LickTrainerProps> = ({ onBack, initialLickId }) => {
-  const { player: progress, grant, reset } = useProgress();
+  const { player: progress, grant } = useProgress();
   const mic = usePitchStream();
 
   const [phase, setPhase] = useState<Phase>('setup');
@@ -240,7 +239,10 @@ export const LickTrainer: React.FC<LickTrainerProps> = ({ onBack, initialLickId 
 
   useEffect(() => {
     if (phase !== 'practice' || !mic.sample) return;
-    processSample(mic.sample.noteName, mic.sample.timestamp);
+    processSample(
+      match.octaveTolerance ? mic.sample.noteName : mic.sample.fullNote,
+      mic.sample.timestamp,
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mic.sample]);
 
@@ -385,12 +387,7 @@ export const LickTrainer: React.FC<LickTrainerProps> = ({ onBack, initialLickId 
 
             <LickTimeline events={events} activeEventId={activeEventId} total={totalBeats(lick)} />
 
-            <LickFretboard
-              current={currentEvent}
-              events={events}
-              total={totalBeats(lick)}
-              activeEventId={activeEventId}
-            />
+            <LickFretboard current={currentEvent} />
 
             {lick.description && (
               <p className="text-[11px] text-slate-400 italic">{lick.description}</p>
@@ -453,13 +450,7 @@ export const LickTrainer: React.FC<LickTrainerProps> = ({ onBack, initialLickId 
               </span>
             </div>
             <LickTimeline events={events} activeEventId={currentEvent?.id ?? null} total={totalBeats(lick)} />
-            <LickFretboard
-              current={currentEvent}
-              events={events}
-              total={totalBeats(lick)}
-              activeEventId={currentEvent?.id ?? null}
-              playedNote={mic.sample?.noteName}
-            />
+            <LickFretboard current={currentEvent} playedNote={mic.sample?.noteName} />
           </div>
 
           {hit && (
@@ -659,11 +650,8 @@ const LickTimeline: React.FC<{
 
 const LickFretboard: React.FC<{
   current: LickEvent | null;
-  events: LickEvent[];
-  total: number;
-  activeEventId?: string | null;
   playedNote?: string;
-}> = ({ current, events, total, activeEventId, playedNote }) => {
+}> = ({ current, playedNote }) => {
   const strings = ['e', 'B', 'G', 'D', 'A', 'E'];
   const currentString = current?.string ?? null;
   const currentFret = current?.fret ?? null;
@@ -684,7 +672,7 @@ const LickFretboard: React.FC<{
         )}
       </div>
       <div className="space-y-1">
-        {strings.map((s, idx) => (
+        {strings.map((s) => (
           <div key={s} className="flex items-center gap-2">
             <span className="cyber-mono w-4 text-[10px] text-cyan-300/60 text-right">{s}</span>
             <div className="flex-1 h-8 bg-slate-900/80 rounded border border-cyan-500/10 relative">

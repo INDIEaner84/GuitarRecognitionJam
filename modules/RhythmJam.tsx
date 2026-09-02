@@ -75,7 +75,7 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
   const [currentBeat, setCurrentBeat] = useState<number | null>(null);
   const [lastResult, setLastResult] = useState<BeatResult | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const [results, setResults] = useState<BeatResult[]>([]);
+  const [, setResults] = useState<BeatResult[]>([]);
   const [barCount, setBarCount] = useState(0);
   const [hits, setHits] = useState(0);
   const [perfects, setPerfects] = useState(0);
@@ -248,21 +248,23 @@ export const RhythmJam: React.FC<RhythmJamProps> = ({ onBack }) => {
     resetStats();
     setPhase('playing');
     await mic.start();
-    await metronome().start(Math.max(tempo.startBpm, tempo.minBpm), pattern.length, (info) => {
-      if (beatRef.current) resolveBeat();
-      const expected: Cell = pattern[info.index % pattern.length];
-      setCurrentBeat(info.beatInBar);
-      beatRef.current = {
-        index: info.index,
-        expected,
-        atMs: info.atMs,
-        hitTime: null,
-        quality: null,
-        resolved: false,
-      };
-      if (info.bar > 0 && info.bar >= maxBars && info.beatInBar === 0) {
-        finish();
-      }
+    await metronome().start(Math.max(tempo.startBpm, tempo.minBpm), pattern.length, {
+      onBeat: (info) => {
+        if (beatRef.current) resolveBeat();
+        const expected: Cell = pattern[info.index % pattern.length];
+        setCurrentBeat(info.beatInBar);
+        beatRef.current = {
+          index: info.index,
+          expected,
+          atMs: info.atMs,
+          hitTime: null,
+          quality: null,
+          resolved: false,
+        };
+        if (info.bar > 0 && info.bar >= maxBars && info.beatInBar === 0) {
+          finish();
+        }
+      },
     });
   };
 

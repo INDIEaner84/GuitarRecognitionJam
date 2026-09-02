@@ -256,12 +256,12 @@ export const reasonForFit = (
   switch (fit) {
     case 'chord-tone':
       if (pitchClass === chord.rootIndex) return `Grundton von ${chord.degree}. Gibt dem Akkord das Fundament — sicherster Startpunkt.`;
-      if (pitchClass === (chord.rootIndex + 4) % 12 && ['maj', 'maj7', 'dom7'].includes(chord.qualityId)) return `Dur-Terz: macht den Akkord hell/fröhlich (${chord.degree} = ${chord.def.label}).`;
-      if (pitchClass === (chord.rootIndex + 3) % 12 && ['min', 'min7'].includes(chord.qualityId)) return `Moll-Terz: macht den Akkord dunkel/emotional (${chord.degree} = ${chord.def.label}).`;
+      if (pitchClass === (chord.rootIndex + 4) % 12 && ['maj', 'maj7', 'dom7'].includes(chord.qualityId)) return `${name} ist die Dur-Terz: macht den Akkord hell/fröhlich (${chord.degree} = ${chord.def.label}).`;
+      if (pitchClass === (chord.rootIndex + 3) % 12 && ['min', 'min7'].includes(chord.qualityId)) return `${name} ist die Moll-Terz: macht den Akkord dunkel/emotional (${chord.degree} = ${chord.def.label}).`;
       if (pitchClass === (chord.rootIndex + 7) % 12) return `Quinte: klingt neutral/offen — passt fast immer, ohne zu viel Farbe.`;
-      return `Akkordton von ${chord.degree}${chord.def.symbol}. Klingt sicher, weil er im Akkord selbst steckt.`;
+      return `${name} ist Akkordton von ${chord.degree}${chord.def.symbol}. Klingt sicher, weil er im Akkord selbst steckt.`;
     case 'guide-tone':
-      if (pitchClass === third) return `Leitton (Terz): er definiert, ob der Akkord dur oder moll ist. Sehr charakteristisch.`;
+      if (pitchClass === third) return `${name} ist die Terz: sie definiert, ob der Akkord dur oder moll ist. Sehr charakteristisch.`;
       return `Leitton (Septime): erzeugt Bewegung und „zieht“ zum nächsten Akkord.`;
     case 'scale-tone':
       return `Tonleiter-Ton: liegt in der Tonart, gehört aber nicht zum Akkord → farbiger, aber weniger stabil. Als Durchgangs-/Füllnote super.`;
@@ -299,7 +299,6 @@ export const buildRhythmLick = (
   keyIndex: number,
   mode: JamMode,
   progression: ProgressionDef,
-  bpm: number,
 ) => {
   const chords = progressionChords(keyIndex, mode, progression.steps);
   const events = chords.map((chord, i) => ({

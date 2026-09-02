@@ -4,7 +4,7 @@
  * Generates deterministic-ish multiple-choice questions with explanations so
  * both modules can reuse the same question model and scoring.
  */
-import { pitchClassName, SCALE_DEFS, scaleNames } from './theory';
+import { SCALE_DEFS, scaleNames } from './theory';
 
 export interface Question<T = unknown> {
   prompt: string;
@@ -27,8 +27,13 @@ const shuffle = <T,>(arr: T[]): T[] => {
   return a;
 };
 
-const shuffledOptions = (correct: string, wrong: string[]): string[] =>
-  shuffle([correct, ...wrong.slice(0, 3)]);
+/** Immer 4 eindeutige Optionen — die richtige Antwort ist garantiert dabei. */
+const shuffledOptions = (correct: string, wrong: string[]): string[] => {
+  const pool = shuffle(
+    Array.from(new Set(wrong.filter((w) => w !== correct))),
+  ).slice(0, 3);
+  return shuffle([correct, ...pool]);
+};
 
 export const buildIntervalQuestion = (): Question<{ note: string; interval: number }> => {
   const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -76,15 +81,18 @@ export const buildChordNameQuestion = (): Question<{ root: number; quality: numb
   const intervals = quality === 0 ? [0, 4, 7] : quality === 1 ? [0, 3, 7] : quality === 2 ? [0, 4, 7, 11] : [0, 4, 7, 10];
   const chars = quality === 0 ? '' : quality === 1 ? 'm' : quality === 2 ? 'Maj7' : '7';
   const chordNames = intervals.map((i) => NOTES[(root + i) % 12]);
-  const wrong = [
-    NOTES[random(12)] + (random(2) === 0 ? 'm' : 'Maj7'),
-    NOTES[random(12)] + '7',
-    NOTES[random(12)] + (random(2) === 0 ? '' : 'm'),
-  ].filter((v) => v !== NOTES[root] + chars);
+  const correct = NOTES[root] + chars;
+  const suffixes = ['', 'm', 'Maj7', '7'];
+  const wrong: string[] = [];
+  let guard = 0;
+  while (wrong.length < 4 && guard++ < 60) {
+    const candidate = NOTES[random(12)] + suffixes[random(suffixes.length)];
+    if (candidate !== correct && !wrong.includes(candidate)) wrong.push(candidate);
+  }
   return {
     prompt: `Welcher Akkord ist das? ${chordNames.join(' ')}`,
-    options: shuffledOptions(NOTES[root] + chars, wrong),
-    correct: NOTES[root] + chars,
+    options: shuffledOptions(correct, wrong),
+    correct,
     category: 'Akkorde',
     explanation: `${NOTES[root]}${chars}: ${chordNames.join(' · ')}`,
     payload: { root, quality },

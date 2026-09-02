@@ -2,8 +2,23 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ScaleAnalysis } from "../types";
 
+/**
+ * Achtung: der Key wird beim Build in das Client-Bundle eingesetzt (siehe
+ * vite.config.ts). Nur mit einem lokal/quota-beschränkten Test-Key benutzen —
+ * für echte Deployments gehört der Aufruf hinter ein Backend.
+ */
+const apiKey = process.env.GEMINI_API_KEY ?? process.env.API_KEY;
+
+export const isGeminiConfigured = (): boolean => Boolean(apiKey);
+
 export const analyzeMusicalContext = async (notes: string[]): Promise<ScaleAnalysis> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  if (!apiKey) {
+    throw new Error(
+      'Kein GEMINI_API_KEY gesetzt — KI-Analyse ist aus. Lokale Erkennung (Tonart, Skalen, Fretboard, Trainer) läuft weiter.',
+    );
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
   const prompt = `I am playing the following notes: ${notes.join(", ")}. 
   1. Identify the most likely musical key.
@@ -103,5 +118,9 @@ export const analyzeMusicalContext = async (notes: string[]): Promise<ScaleAnaly
   });
 
   const jsonStr = response.text || "{}";
-  return JSON.parse(jsonStr);
+  try {
+    return JSON.parse(jsonStr) as ScaleAnalysis;
+  } catch {
+    throw new Error('Die KI-Antwort war kein gültiges JSON. Bitte erneut analysieren.');
+  }
 };

@@ -6,7 +6,7 @@ import {
   RunResult,
   FeedbackKind,
   samePitch,
-  normalizeNoteName,
+  samePitchStrict,
 } from './licks';
 
 export function matchPlayedEvent(
@@ -17,12 +17,11 @@ export function matchPlayedEvent(
   settings: MatchSettings,
 ): RunResult {
   const noteCorrect = expectedNotes.some((expected) =>
-    detectedNotes.some((played) => {
-      if (settings.octaveTolerance) {
-        return samePitch(played, expected);
-      }
-      return normalizeNoteName(played) === normalizeNoteName(expected);
-    }),
+    detectedNotes.some((played) =>
+      settings.octaveTolerance
+        ? samePitch(played, expected)
+        : samePitchStrict(played, expected),
+    ),
   );
 
   const t = settings.perfectWindowMs / 1000;
@@ -54,7 +53,8 @@ export function matchPlayedEvent(
   } else if (noteCorrect && !timingCorrect) {
     feedback = settings.variable === 'timing' ? 'good' : feedback === 'early' ? 'early' : feedback === 'late' ? 'late' : 'on-time-note-only';
   } else if (!noteCorrect && timingCorrect) {
-    feedback = 'wrong-note';
+    // Im Timing-Modus zählt der Treffer — das Feedback muss dazu passen.
+    feedback = settings.variable === 'timing' ? 'on-time-note-only' : 'wrong-note';
   }
 
   const passed =

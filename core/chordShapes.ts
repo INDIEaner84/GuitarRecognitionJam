@@ -118,12 +118,6 @@ const shapeFromCurated = (
     });
   }
 
-  const pcs = positions.map((p) => p.pitchClass);
-  const allIntervalsPresent =
-    def.intervals.every((i) => positions.some((p) => (p.pitchClass - rootClass + 12) % 12 === i % 12)) ||
-    // Some derived voicings intentionally omit the 7th; still a valid grip.
-    false;
-
   if (!positions.length) return null;
 
   const fretted = positions.filter((p) => p.fret > 0);
@@ -144,6 +138,13 @@ const shapeFromCurated = (
     // exactly how many players fret the chord; the diagram still reads clearly.
   };
 };
+
+/** Kleinerer Wert = griffiger: tiefe Lage, kompakte Spannweite, offene Saiten. */
+const shapeScore = (shape: ChordShape): number =>
+  shape.maxFret * 10 +
+  (shape.maxFret - shape.minFret) * 4 +
+  shape.mutedStrings.length * 2 -
+  shape.positions.filter((p) => p.fret === 0).length * 3;
 
 const generatedShape = (rootClass: number, def: ChordDef): ChordShape | null => {
   const intervals = def.intervals.map((i) => i % 12);
@@ -189,11 +190,6 @@ const generatedShape = (rootClass: number, def: ChordDef): ChordShape | null => 
       for (let s = 0; s < 6; s++) if (!used.has(s)) mutedStrings.push(s as StringIndex);
 
       const barre = positions.some((p) => p.fret > 0 && Math.abs(p.fret - fret) <= 2) && minFret >= 1;
-      const score =
-        maxFret * 10 +
-        (maxFret - minFret) * 4 +
-        mutedStrings.length * 2 -
-        positions.filter((p) => p.fret === 0).length * 3;
 
       candidates.push({
         rootClass,
@@ -210,16 +206,11 @@ const generatedShape = (rootClass: number, def: ChordDef): ChordShape | null => 
   }
 
   if (!candidates.length) return null;
-  candidates.sort((a, b) => {
-    const sa =
-      b.maxFret * 10 + (b.maxFret - b.minFret) * 4 + b.mutedStrings.length * 2 -
-      b.positions.filter((p) => p.fret === 0).length * 3;
-    const sb =
-      a.maxFret * 10 + (a.maxFret - a.minFret) * 4 + a.mutedStrings.length * 2 -
-      a.positions.filter((p) => p.fret === 0).length * 3;
-    return sa - sb;
-  });
-  return candidates[0];
+  // Niedrige Lagen, wenig Spannweite und viele offene Saiten sind griffiger,
+  // deshalb gewinnt der Kandidat mit dem kleinsten Score.
+  return candidates
+    .map((shape) => ({ shape, score: shapeScore(shape) }))
+    .sort((a, b) => a.score - b.score)[0].shape;
 };
 
 export const buildChordShape = (

@@ -50,7 +50,7 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
   const [targetSequence, setTargetSequence] = useState<number[]>([]);
   const [targetIndex, setTargetIndex] = useState(0);
   const [challengeBpm, setChallengeBpm] = useState(DEFAULT_TEMPO.startBpm);
-  const [concluded, setConcluded] = useState(false);
+  const [, setConcluded] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -359,7 +359,7 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
         )}
         {suggestions.length > 0 && (
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-            {suggestions.map((s, i) => (
+            {suggestions.map((s) => (
               <button
                 key={`${s.key}-${s.scale.id}`}
                 onClick={() => {
@@ -390,7 +390,7 @@ export const ImprovisationCoach: React.FC<CoachProps> = ({ onBack }) => {
             </div>
             <div className="flex-1">
               <div className="flex gap-1">
-                {targetSequence.map((pc, i) => (
+                {targetSequence.map((_, i) => (
                   <div
                     key={i}
                     className={`flex-1 h-3 rounded ${i < targetIndex ? 'bg-emerald-500/70' : i === targetIndex ? 'bg-fuchsia-500/70 animate-pulse' : 'bg-slate-800'}`}

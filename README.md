@@ -55,10 +55,18 @@ Alles läuft **lokal im Browser** — kein Server, kein Backend, keine Cloud-Pfl
 App.tsx                  → App-Shell, Mikrofon-Loop, Themes, Navigation
 modules/                 → Lick-Trainer, Studios, Quiz, Gehörbildung, Design-Lab
 core/                    → Licks, Harmonie, Themes, Songs, Quiz, Ear, Export, Sound
-components/              → Fretboards, Akkord-Diagramme, Visualizer
+core/audio.ts            → einzige Pitch-Detektion (NSDF + parabolische Interpolation)
+components/              → Fretboards, Akkord-Diagramme, Visualizer, ErrorBoundary
+tests/                   → Unit-Tests der reinen Logik (Vitest)
 .agent/plans.json        → Single Source of Truth der Agenten-Koordination
 scripts/agent-coordination.mjs → CLI für Pläne & Konflikte
 ```
+
+**Tonhöhen-Erkennung:** `core/audio.ts` ist die einzige Implementierung und
+wird von der Analyse-Ansicht und allen Trainings-Modulen geteilt. Sie nutzt
+die normalisierte Differenzfunktion (NSDF) und wählt die *kürzeste* Periode,
+die nahe am Bestwert liegt — damit gibt es keine Oktav-/Quint-Sprünge mehr bei
+gehaltenen Tönen.
 
 ## 🚦 Installation & Start
 
@@ -70,6 +78,7 @@ npm run dev      # Entwicklungs-Server → http://localhost:3000
 ```
 
 Optional (musikalische Analyse): `GEMINI_API_KEY` in `.env.local` setzen.
+Ohne Key läuft alles außer der KI-Analyse — die App sagt das dann im UI.
 
 Produktions-Build:
 
@@ -77,6 +86,23 @@ Produktions-Build:
 npm run build
 npm run preview
 ```
+
+Qualitätssicherung:
+
+```bash
+npm run typecheck   # tsc --noEmit (strict)
+npm run test        # Vitest, Unit-Tests für core/ (Audio, Theorie, Matching, Fortschritt …)
+npm run verify      # typecheck + test + build
+```
+
+Tests liegen in `tests/`, die CI (`.github/workflows/ci.yml`) führt alle drei
+Schritte bei jedem Push aus.
+
+## 🧭 Nächste Schritte
+
+Eine priorisierte Liste offener Punkte (inkl. bekannter Baustellen wie
+Tailwind-CDN und API-Key im Client-Bundle) liegt in
+[`docs/next-steps.md`](docs/next-steps.md).
 
 ## 🗺️ Roadmap / Status
 

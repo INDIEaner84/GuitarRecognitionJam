@@ -1,5 +1,6 @@
 import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { loadEnv } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
@@ -19,6 +20,26 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
-      }
+      },
+      test: {
+        environment: 'node',
+        include: ['tests/**/*.test.ts'],
+      },
+      build: {
+        // Tone.js, React und das Gemini-SDK sind groß; eigene Chunks halten
+        // das Start-Bundle klein und verbessern das Caching.
+        chunkSizeWarningLimit: 600,
+        rollupOptions: {
+          output: {
+            manualChunks(id: string) {
+              if (!id.includes('node_modules')) return;
+              if (id.includes('node_modules/tone')) return 'tone';
+              if (id.includes('node_modules/@google')) return 'genai';
+              if (id.includes('node_modules/pdfjs-dist')) return 'pdf';
+              if (id.includes('node_modules/react') || id.includes('node_modules/scheduler')) return 'react';
+            },
+          },
+        },
+      },
     };
 });

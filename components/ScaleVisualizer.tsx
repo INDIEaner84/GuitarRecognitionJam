@@ -89,8 +89,8 @@ interface FretboardProps {
   scaleNotes?: string[];
   detectedNotes?: string[];
   chordNotes?: string[];
-  highlightNote?: string;
-  activeNote?: string;
+  highlightNote?: string | null;
+  activeNote?: string | null;
   highlightPosition?: { string: number; fret: number };
 }
 

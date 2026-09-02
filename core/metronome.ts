@@ -21,7 +21,6 @@ export interface MetronomeCallbacks {
 
 export class Metronome {
   private synth: Tone.MembraneSynth | null = null;
-  private transportId: number | null = null;
   private running = false;
   private bpm = 80;
   private beatsPerBar = 4;
@@ -56,7 +55,7 @@ export class Metronome {
     transport.bpm.value = this.bpm;
 
     const interval = '4n';
-    this.transportId = transport.scheduleRepeat((time) => {
+    transport.scheduleRepeat((time) => {
       const isDownbeat = this.beatIndex % this.beatsPerBar === 0;
       this.synth?.triggerAttackRelease(isDownbeat ? 'C3' : 'G2', '32n', time);
       Tone.Draw.schedule(() => {
@@ -91,7 +90,6 @@ export class Metronome {
     this.running = false;
     Tone.getTransport().stop();
     Tone.getTransport().cancel();
-    this.transportId = null;
   }
 
   dispose() {

@@ -29,9 +29,6 @@ const noteAt = (stringName: string, fret: number): string => {
 const isTabLine = (line: string): boolean =>
   STRING_NAMES.some((s) => line.startsWith(s)) && /[0-9-]/.test(line);
 
-const isTextNoteLine = (line: string): boolean =>
-  /[A-G](#|b)?\d?/.test(line) && /[0-9]/.test(line);
-
 /** Group the six string rows into columns of played events. */
 export const parseAsciiTab = (lines: string[]): LickEvent[] => {
   const normalized = lines
@@ -166,6 +163,8 @@ export const parsePdfLines = (rawLines: string[], title: string): PdfParseResult
   };
 };
 
+import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
 /** Read a PDF from a File and return parsed lick events. */
 export const parsePdfFile = async (file: File): Promise<PdfParseResult> => {
   const buffer = await file.arrayBuffer();
@@ -178,8 +177,8 @@ export const parsePdfFile = async (file: File): Promise<PdfParseResult> => {
   }
 
   const pdfjs = pdfjsModule.default ?? pdfjsModule;
-  pdfjs.GlobalWorkerOptions.workerSrc =
-    'https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.min.mjs';
+  // Worker kommt aus dem Bundle — kein CDN, funktioniert auch offline.
+  pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
   const pdf = await pdfjs.getDocument({ data: buffer }).promise;
   const rawLines: string[] = [];
