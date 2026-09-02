@@ -9,22 +9,20 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-09-02T11:54:15.415Z
+Aktualisiert: 2026-09-02T11:57:05.891Z
 
 ## Agents
 
 | ID | Rolle | Status | Pläne aktiv/gesamt |
 | --- | --- | --- | --- |
-| `harmonic-scout-core` | Repository maintainer / coordinator | active | 1/7 |
+| `harmonic-scout-core` | Repository maintainer / coordinator | active | 0/7 |
 | `audio-engineer` | Pitch detection, autocorrelation, Tone.js playback, audio routing | available | 0/1 |
 | `ui-craftsman` | React components, layout, styling, accessibility | available | 0/5 |
 | `ai-context-engineer` | Gemini service, prompts, response schemas, analysis types | available | 0/0 |
 
 ## Aktive Vorhaben
 
-| Plan | Agent | Status | Bereich | Berührte Dateien |
-| --- | --- | --- | --- | --- |
-| `PLAN-013` | `harmonic-scout-core` | 🔵 in-progress | docs,release-ops | docs/github-setup.md, package.json, package-lock.json, metadata.json, .agent/plans.json, docs/agent-coordination.md |
+_Keine aktiven Vorhaben._
 
 ## Alle Vorhaben
 
@@ -187,11 +185,15 @@ Aktualisiert: 2026-09-02T11:54:15.415Z
 ### PLAN-013 — GitHub setup: repo metadata + v1.0.0 release
 
 - **Agent:** `harmonic-scout-core`
-- **Status:** 🔵 in-progress
+- **Status:** 🟢 done
 - **Bereich:** docs,release-ops
 - **Betroffene Dateien:** docs/github-setup.md, package.json, package-lock.json, metadata.json, .agent/plans.json, docs/agent-coordination.md
 
 **Ziel:** Create docs/github-setup.md checklist, bump version to 1.0.0, set GitHub description+topics, push cleanup commit, cut v1.0.0 release.
+
+**Notizen:**
+- Status changed to done at 2026-09-02T11:57:05.891Z.
+- Cleanup-Commit gepusht + v1.0.0 getaggt und als GitHub-Release veroeffentlicht. Repo-Beschreibung/Topics blockiert: Integration-Token ohne Administration-Permission (403 repo edit) — fertige Befehle in docs/github-setup.md.
 
 
 ## Workflow
