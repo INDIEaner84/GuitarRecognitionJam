@@ -9,7 +9,7 @@ node scripts/agent-coordination.mjs update --plan <PLAN-ID> --status done
 node scripts/agent-coordination.mjs dashboard
 ```
 
-Aktualisiert: 2026-09-02T11:57:05.891Z
+Aktualisiert: 2026-09-02T12:04:00.857Z
 
 ## Agents
 
@@ -185,7 +185,7 @@ _Keine aktiven Vorhaben._
 ### PLAN-013 — GitHub setup: repo metadata + v1.0.0 release
 
 - **Agent:** `harmonic-scout-core`
-- **Status:** 🟢 done
+- **Status:** ⚪ released
 - **Bereich:** docs,release-ops
 - **Betroffene Dateien:** docs/github-setup.md, package.json, package-lock.json, metadata.json, .agent/plans.json, docs/agent-coordination.md
 
@@ -194,6 +194,8 @@ _Keine aktiven Vorhaben._
 **Notizen:**
 - Status changed to done at 2026-09-02T11:57:05.891Z.
 - Cleanup-Commit gepusht + v1.0.0 getaggt und als GitHub-Release veroeffentlicht. Repo-Beschreibung/Topics blockiert: Integration-Token ohne Administration-Permission (403 repo edit) — fertige Befehle in docs/github-setup.md.
+- Status changed to released at 2026-09-02T12:04:00.856Z.
+- PR #2 in main gemergt (Merge-Commit 75adda7). v1.0.0-Commit ab jetzt auf main erreichbar.
 
 
 ## Workflow
