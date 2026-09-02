@@ -1,6 +1,6 @@
 {
   "name": "Harmonic Scout",
-  "description": "A professional-grade real-time musical key detector that uses AI to analyze your performance via microphone and suggest matching scales, modes, and riffs.",
+  "description": "Cyberpunk/Akira-style guitar trainer: live pitch & chord recognition via microphone, lick trainer with PDF import, improvisation coach, rhythm jam, theory quiz and ear training — all local in the browser.",
   "requestFramePermissions": [
     "microphone"
   ]

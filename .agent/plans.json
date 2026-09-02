@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-08-31T18:15:04.456Z",
+  "updatedAt": "2026-09-02T11:57:05.891Z",
   "repo": "GuitarRecognitionJam",
   "coordination": {
     "singleSourceOfTruth": ".agent/plans.json",
@@ -329,6 +329,29 @@
         "Uncommitted, tsc + build gruen.",
         "Status changed to done at 2026-08-31T18:15:04.456Z.",
         "Lick-Bibliothek mit Genre-Filter, Vorschau + Sprung in den Lick-Trainer; DesignLab-Karten und 2 neue Themes direkt per Klick aktivierbar. tsc + build gruen."
+      ]
+    },
+    {
+      "id": "PLAN-013",
+      "agent": "harmonic-scout-core",
+      "title": "GitHub setup: repo metadata + v1.0.0 release",
+      "goal": "Create docs/github-setup.md checklist, bump version to 1.0.0, set GitHub description+topics, push cleanup commit, cut v1.0.0 release.",
+      "area": "docs,release-ops",
+      "files": [
+        "docs/github-setup.md",
+        "package.json",
+        "package-lock.json",
+        "metadata.json",
+        ".agent/plans.json",
+        "docs/agent-coordination.md"
+      ],
+      "status": "done",
+      "createdAt": "2026-09-02T11:54:15.406Z",
+      "updatedAt": "2026-09-02T11:57:05.891Z",
+      "dependsOn": [],
+      "notes": [
+        "Status changed to done at 2026-09-02T11:57:05.891Z.",
+        "Cleanup-Commit gepusht + v1.0.0 getaggt und als GitHub-Release veroeffentlicht. Repo-Beschreibung/Topics blockiert: Integration-Token ohne Administration-Permission (403 repo edit) — fertige Befehle in docs/github-setup.md."
       ]
     }
   ]
